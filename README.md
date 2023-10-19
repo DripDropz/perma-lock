@@ -1,23 +1,30 @@
 # Perma Lock
 
-This contract perma locks a token forever, allowing the user to add tokens but never remove them. This contract is compiled to a specific token.
+`Perma Lock` is a contract that permanently locks a specific token, allowing users to add tokens but preventing any withdrawals. Once tokens are locked in this contract, they can't be removed.
 
-## Set up
+## **Prerequisites**
+- Ensure you have `ADA` available for funding the wallets.
 
-Define the token information in the `start_info.json`
+## **Configuration**
+
+Begin by specifying the token details in `start_info.json`:
 
 ```json
 {
-  "__comment1__": "This is the locking token for the contract",
+  "__comment1__": "This is the locking token for the contract.",
   "lockingPid": "beec4fac1e41e603f4a8620d7864c1e2d55a2b9ae5522b675cfa6c52",
   "lockingTkn": "001bc280001af8787e4ae5450b462441e2f2626af48fd9faf1c500fbbf3d0737",
+  "__comment2__": "This is maximum amount of the token in existence.",
   "maxTknAmt": 100000000
 }
 ```
 
-Run the `complete_build.sh` script.
+## **Setup**
 
-Enter the scripts folder and create the required testnet wallets.
+
+1. Execute the `complete_build.sh` script to prepare the environment.
+   
+2. Navigate to the `scripts` directory and create the necessary testnet wallets:
 
 ```bash
 ./create_testnet_wallet.sh wallets/reference-wallet
@@ -25,18 +32,28 @@ Enter the scripts folder and create the required testnet wallets.
 ./create_testnet_wallet.sh wallets/user-wallet
 ```
 
-Fund the wallets with some ada. The user wallet will hold the tokens to add to the perma lock.
+3. Fund the wallets. The `user-wallet` will store the tokens you intend to add to the perma lock contract.
 
-## Usage
+- The happy path assumes a synced testnet node. 
+- Please update the `data/path_to_cli.sh` and `data/path_to_socket.sh` files to match your current `cardano-cli` and `node.socket` path.
+- The `all_balances.sh` script will display the testnet wallet addresses and UTxOs.
 
-The `scripts` folder has sequential scripts for the happy path. They will allow setting up the reference wallet, creating the perma-locked utxo, and adding tokens to the contract.
+## **Usage**
 
-A user can add tokens to the contract with the command below.
+The `scripts` directory contains sequential scripts for a smooth execution. They facilitate:
+
+- Setting up the reference wallet.
+- Creating the perma-locked UTXO.
+- Depositing tokens into the contract.
+
+To add tokens to the contract:
 
 ```bash
 ./02_addTokens.sh 123456789
 ```
 
-This will lock 123,456,789 tokens into the contract where the token is defined in the `start_info.json` file.
+The command above locks 123,456,789 tokens into the contract, as specified in the `start_info.json`.
 
-* This contract is designed to permanently lock tokens forever.
+If the debug endpoint is set to `True` within the `perma.ak` script then the `debug.sh` script will allow a user to remove the perma locked utxo. This is for testing only and should be removed at production.
+
+> ⚠️ **Caution**: This contract is designed to lock tokens irreversibly. Ensure you understand the implications before using.
