@@ -28,11 +28,11 @@ validator(locking_pid: PolicyId, locking_tkn: AssetName) {
               find.output_datum_by_addr(tx.outputs, this_addr)
             and {
               // only can add
-              (add_amt > 0)?,
+              add_amt > 0,
               // just continue the datum
-              (inbound_datum == outbound_datum)?,
+              inbound_datum == outbound_datum,
               // add the value to the contract
-              payout.exact(this_addr, returning_value, tx.outputs)?,
+              payout.exact(this_addr, returning_value, tx.outputs),
               // single sale script input
               count.inputs_by_addr(tx.inputs, this_addr, 1),
               // one sale script output
