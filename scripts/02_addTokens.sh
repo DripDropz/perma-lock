@@ -75,6 +75,7 @@ ${cli} query utxo \
     --testnet-magic ${testnet_magic} \
     --address ${user_address} \
     --out-file ./tmp/user_utxo.json
+
 TXNS=$(jq length ./tmp/user_utxo.json)
 if [ "${TXNS}" -eq "0" ]; then
    echo -e "\n \033[0;31m NO UTxOs Found At ${user_address} \033[0m \n";
@@ -89,6 +90,7 @@ ${cli} query utxo \
     --testnet-magic ${testnet_magic} \
     --address ${collat_address} \
     --out-file ./tmp/collat_utxo.json
+
 TXNS=$(jq length ./tmp/collat_utxo.json)
 if [ "${TXNS}" -eq "0" ]; then
    echo -e "\n \033[0;31m NO UTxOs Found At ${collat_address} \033[0m \n";
@@ -96,6 +98,7 @@ if [ "${TXNS}" -eq "0" ]; then
 fi
 collat_utxo=$(jq -r 'keys[0]' ./tmp/collat_utxo.json)
 
+# get script reference
 script_ref_utxo=$(${cli} transaction txid --tx-file ./tmp/perma-lock-reference-utxo.signed)
 
 # exit
