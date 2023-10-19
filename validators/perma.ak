@@ -27,6 +27,8 @@ validator(locking_pid: PolicyId, locking_tkn: AssetName) {
             expect outbound_datum: Void =
               find.output_datum_by_addr(tx.outputs, this_addr)
             and {
+              // only can add
+              (add_amt > 0)?,
               // just continue the datum
               (inbound_datum == outbound_datum)?,
               // add the value to the contract
@@ -38,7 +40,7 @@ validator(locking_pid: PolicyId, locking_tkn: AssetName) {
             }
           }
           // set false in production, true in testing
-          Debug -> False
+          Debug -> True
         }
       // any other purpose fails
       _ -> False
