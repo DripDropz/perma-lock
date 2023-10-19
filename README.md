@@ -1,6 +1,6 @@
 # Perma Lock
 
-This contract perma locks a token forever, allowing the user to add but never remove.
+This contract perma locks a token forever, allowing the user to add tokens but never remove them. This contract is compiled to a specific token.
 
 ## Set up
 
@@ -26,3 +26,17 @@ Enter the scripts folder and create the required testnet wallets.
 ```
 
 Fund the wallets with some ada. The user wallet will hold the tokens to add to the perma lock.
+
+## Usage
+
+The `scripts` folder has sequential scripts for the happy path. They will allow setting up the reference wallet, creating the perma-locked utxo, and adding tokens to the contract.
+
+A user can add tokens to the contract with the command below.
+
+```bash
+./02_addTokens.sh 123456789
+```
+
+This will lock 123,456,789 tokens into the contract where the token is defined in the `start_info.json` file.
+
+* This contract is designed to permanently lock tokens forever.
