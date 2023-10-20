@@ -28,13 +28,13 @@ validator(locking_pid: PolicyId, locking_tkn: AssetName) {
             // make sure to add something and send it back to the contract, one at a time
             and {
               // only can add tokens
-              (add_amt > 0)?,
+              add_amt > 0,
               // send exact value back to the contract
-              payout.exact(this_addr, returning_value, tx.outputs)?,
+              payout.exact(this_addr, returning_value, tx.outputs),
               // single script input
-              count.inputs_by_addr(tx.inputs, this_addr, 1)?,
+              count.inputs_by_addr(tx.inputs, this_addr, 1),
               // single script output
-              count.outputs_by_addr(tx.outputs, this_addr, 1)?,
+              count.outputs_by_addr(tx.outputs, this_addr, 1),
             }
           }
           // set false in production, true in testing

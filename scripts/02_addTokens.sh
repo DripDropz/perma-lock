@@ -15,27 +15,21 @@ if [[ ${1} -eq 0 ]] ; then
     exit
 fi
 
-
 token_amt=${1}
 
-# update bundle size
-variable=${token_amt}; jq --argjson variable "$variable" '.fields[0].int=$variable' ./data/add-token-redeemer.json > ./data/add-token-redeemer-new.json
-mv ./data/add-token-redeemer-new.json ./data/add-token-redeemer.json
-
-#
-# exit
-#
+# update the add amount but account for any size number up to 2^63 -1
+python -c "import json; data=json.load(open('./data/add-token-redeemer.json', 'r')); data['fields'][0]['int'] = $token_amt; json.dump(data, open('./data/add-token-redeemer.json', 'w'), indent=2)"
 
 # perma lock contract
 script_path="../contracts/perma_lock_contract.plutus"
 script_address=$(${cli} address build --payment-script-file ${script_path} --testnet-magic ${testnet_magic})
 
-# collat, buyer, reference
+# user wallet
 user_path="user-wallet"
 user_address=$(cat ./wallets/${user_path}/payment.addr)
 user_pkh=$(${cli} address key-hash --payment-verification-key-file ./wallets/${user_path}/payment.vkey)
 
-#
+# collat wallet
 collat_address=$(cat ./wallets/collat-wallet/payment.addr)
 collat_pkh=$(${cli} address key-hash --payment-verification-key-file ./wallets/collat-wallet/payment.vkey)
 
@@ -58,8 +52,12 @@ script_tx_in=${TXIN::-8}
 locking_pid=$(jq -r '.lockingPid' ../start_info.json)
 locking_tkn=$(jq -r '.lockingTkn' ../start_info.json)
 
+# this should work for the min lovelace
 script_lovelace=$(jq '[.[] | .value.lovelace] | add' ./tmp/script_utxo.json)
-script_token=$(jq '[.[] | .value["'"${locking_pid}"'"]["'"${locking_tkn}"'"]] | add' ./tmp/script_utxo.json)
+# get the current token amount but account for numbers below 2^63 -1
+script_token=$(python -c "import json; data=json.load(open('./tmp/script_utxo.json')); print(next(item['value']['${locking_pid}']['${locking_tkn}'] for item in data.values() if '${locking_pid}' in item['value'] and '${locking_tkn}' in item['value']['${locking_pid}']))" )
+
+echo $script_token
 
 if [ "$script_token" == "null" ]; then
     script_token=0
