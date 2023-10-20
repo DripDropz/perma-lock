@@ -1,7 +1,7 @@
 {
   "__comment1__": "This is the locking token for the contract",
-  "lockingPid": "6effa18e41008cd0b13f3959a5a4af40b92ca936bb7669f40d3b1f81",
-  "lockingTkn": "5468697349734f6e6553746172746572546f6b656e466f7254657374696e6732",
+  "lockingPid": "d441227553a0f1a965fee7d60a0f724b368dd1bddbc208730fccebcf",
+  "lockingTkn": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
   "__comment2__": "This is maximum amount of the token in existence.",
   "maxTknAmt": 9223372036854775807
 }

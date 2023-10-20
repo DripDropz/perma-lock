@@ -51,17 +51,11 @@ script_tx_in=${TXIN::-8}
 
 locking_pid=$(jq -r '.lockingPid' ../start_info.json)
 locking_tkn=$(jq -r '.lockingTkn' ../start_info.json)
-
 # this should work for the min lovelace
 script_lovelace=$(jq '[.[] | .value.lovelace] | add' ./tmp/script_utxo.json)
 # get the current token amount but account for numbers below 2^63 -1
-script_token=$(python -c "import json; data=json.load(open('./tmp/script_utxo.json')); print(next(item['value']['${locking_pid}']['${locking_tkn}'] for item in data.values() if '${locking_pid}' in item['value'] and '${locking_tkn}' in item['value']['${locking_pid}']))" )
-
+script_token=$(python -c "import json; data=json.load(open('./tmp/script_utxo.json')); print(next((item['value']['${locking_pid}']['${locking_tkn}'] for item in data.values() if '${locking_pid}' in item['value'] and '${locking_tkn}' in item['value']['${locking_pid}']), 0))")
 echo $script_token
-
-if [ "$script_token" == "null" ]; then
-    script_token=0
-fi
 
 # should handle large numbers just fine
 token_amt=$(echo "${script_token} + ${1}" | bc)

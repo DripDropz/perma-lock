@@ -33,7 +33,8 @@ TXIN=$(jq -r --arg alltxin "" 'keys[] | . + $alltxin + " --tx-in"' ./tmp/sender_
 seller_tx_in=${TXIN::-8}
 
 # assume that the user wallet has some tokens
-lock_token_amt=$(jq '[.[] | .value["'"${locking_pid}"'"]["'"${locking_tkn}"'"]] | add' ./tmp/sender_utxo.json)
+lock_token_amt=$(python -c "import json; data=json.load(open('./tmp/sender_utxo.json')); print(next((item['value']['${locking_pid}']['${locking_tkn}'] for item in data.values() if '${locking_pid}' in item['value'] and '${locking_tkn}' in item['value']['${locking_pid}']), 0))")
+
 assets="${lock_token_amt} ${locking_pid}.${locking_tkn}"
 min_utxo=$(${cli} transaction calculate-min-required-utxo \
     --babbage-era \
