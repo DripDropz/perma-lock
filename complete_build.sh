@@ -13,10 +13,10 @@ rm hashes/* || true
 echo -e "\033[1;34m Building Contracts \033[0m"
 
 # standard build
-aiken build
+# aiken build
 
 # keep the traces for testing if required
-# aiken build --keep-traces
+aiken build --keep-traces
 
 # build out the entire script
 echo -e "\033[1;34m Building Token Data \033[0m"

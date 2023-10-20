@@ -1,10 +1,13 @@
 #!/usr/bin/bash
 set -e
+
 #
-rm tmp/tx.signed || true
 export CARDANO_NODE_SOCKET_PATH=$(cat ./data/path_to_socket.sh)
 cli=$(cat ./data/path_to_cli.sh)
 testnet_magic=$(cat ./data/testnet.magic)
+
+# reset the signed tx
+rm tmp/tx.signed || true
 
 # Addresses
 sender_path="./wallets/user-wallet/"
@@ -29,6 +32,7 @@ alltxin=""
 TXIN=$(jq -r --arg alltxin "" 'keys[] | . + $alltxin + " --tx-in"' ./tmp/sender_utxo.json)
 seller_tx_in=${TXIN::-8}
 
+# assume that the user wallet has some tokens
 lock_token_amt=$(jq '[.[] | .value["'"${locking_pid}"'"]["'"${locking_tkn}"'"]] | add' ./tmp/sender_utxo.json)
 assets="${lock_token_amt} ${locking_pid}.${locking_tkn}"
 min_utxo=$(${cli} transaction calculate-min-required-utxo \

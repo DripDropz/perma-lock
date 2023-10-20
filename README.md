@@ -19,6 +19,8 @@ Begin by specifying the token details in `start_info.json`:
 }
 ```
 
+- The maximum allowed integer for `maxTknAmt` is $2^{63} - 1$.
+
 ## **Setup**
 
 
@@ -32,7 +34,7 @@ Begin by specifying the token details in `start_info.json`:
 ./create_testnet_wallet.sh wallets/user-wallet
 ```
 
-3. Fund the wallets. The `user-wallet` will store the tokens you intend to add to the perma lock contract.
+3. Fund the wallets. The `user-wallet` will store the tokens you intend to add to the perma lock contract. The `collat-wallet` needs 5 ADA and the `reference-wallet` needs at least 10 ADA.
 
 - The happy path assumes a synced testnet node. 
 - Please update the `data/path_to_cli.sh` and `data/path_to_socket.sh` files to match your current `cardano-cli` and `node.socket` path.
@@ -54,6 +56,6 @@ To add tokens to the contract:
 
 The command above locks 123,456,789 tokens into the contract, as specified in the `start_info.json`.
 
-If the debug endpoint is set to `True` within the `perma.ak` script then the `debug.sh` script will allow a user to remove the perma locked utxo. This is for testing only and should be removed at production.
+If the debug endpoint is set to `True` within the `perma.ak` script then the `debug.sh` script will allow a user to remove the perma locked utxo. This is for testing only and should be changed to `False` at production.
 
 > ⚠️ **Caution**: This contract is designed to lock tokens irreversibly. Ensure you understand the implications before using.

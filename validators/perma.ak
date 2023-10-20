@@ -5,6 +5,7 @@ use assist/find
 use assist/payout
 use perma_lock/types.{AddTokens, Debug, Redeemer}
 
+// compile the validator for a specific locking policy id and asset name
 validator(locking_pid: PolicyId, locking_tkn: AssetName) {
   fn params(_datum: Void, redeemer: Redeemer, context: ScriptContext) -> Bool {
     when context.purpose is {
@@ -26,14 +27,14 @@ validator(locking_pid: PolicyId, locking_tkn: AssetName) {
             expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
             // make sure to add something and send it back to the contract, one at a time
             and {
-              // only can add something
-              add_amt > 0,
-              // add the value to the contract
-              payout.exact(this_addr, returning_value, tx.outputs),
-              // single sale script input
-              count.inputs_by_addr(tx.inputs, this_addr, 1),
-              // one sale script output
-              count.outputs_by_addr(tx.outputs, this_addr, 1),
+              // only can add tokens
+              (add_amt > 0)?,
+              // send exact value back to the contract
+              payout.exact(this_addr, returning_value, tx.outputs)?,
+              // single script input
+              count.inputs_by_addr(tx.inputs, this_addr, 1)?,
+              // single script output
+              count.outputs_by_addr(tx.outputs, this_addr, 1)?,
             }
           }
           // set false in production, true in testing

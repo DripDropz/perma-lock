@@ -65,12 +65,13 @@ if [ "$script_token" == "null" ]; then
     script_token=0
 fi
 
-token_amt=$((${script_token} + ${1}))
+# should handle large numbers just fine
+token_amt=$(echo "${script_token} + ${1}" | bc)
 
 script_address_out="${script_address} + ${script_lovelace} + ${token_amt} ${locking_pid}.${locking_tkn}"
 echo "Script OUTPUT: "${script_address_out}
 
-echo -e "\033[0;36m Gathering Buyer UTxO Information  \033[0m"
+echo -e "\033[0;36m Gathering User UTxO Information  \033[0m"
 ${cli} query utxo \
     --testnet-magic ${testnet_magic} \
     --address ${user_address} \
