@@ -36,6 +36,7 @@ aiken blueprint apply -o plutus.json -v perma.params "${locking_tkn_cbor}"
 aiken blueprint convert -v perma.params > contracts/perma_lock_contract.plutus
 
 # store the script hash
+echo -e "\033[1;34m Building Contract Hash Data \033[0m"
 cardano-cli transaction policyid --script-file contracts/perma_lock_contract.plutus > hashes/perma_lock.hash
 
 # end of build

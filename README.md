@@ -4,7 +4,7 @@
 
 ## **Prerequisites**
 - Ensure you have `ADA` available for funding the wallets.
-- Aiken, Python, Cardano-CLI, JQ, BC need to be on path.
+- Aiken, Python3, cardano-cli, jq, bc need to be installed for the happy path to function properly.
 
 ## **Configuration**
 
