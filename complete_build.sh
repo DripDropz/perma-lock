@@ -39,5 +39,7 @@ aiken blueprint convert -v perma.params > contracts/perma_lock_contract.plutus
 echo -e "\033[1;34m Building Contract Hash Data \033[0m"
 cardano-cli transaction policyid --script-file contracts/perma_lock_contract.plutus > hashes/perma_lock.hash
 
+echo -e "\033[1;33m Perma Lock Contract Hash: $(cat hashes/perma_lock.hash) \033[0m"
+
 # end of build
 echo -e "\033[1;32m Building Complete! \033[0m"
