@@ -26,6 +26,7 @@ locking_pid=$(jq -r '.lockingPid' start_info.json)
 locking_tkn=$(jq -r '.lockingTkn' start_info.json)
 
 # one liner for correct cbor
+# requires cbor2
 locking_pid_cbor=$(python3 -c "import cbor2;hex_string='${locking_pid}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 locking_tkn_cbor=$(python3 -c "import cbor2;hex_string='${locking_tkn}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
@@ -37,6 +38,7 @@ aiken blueprint convert -v perma.params > contracts/perma_lock_contract.plutus
 
 # store the script hash
 echo -e "\033[1;34m Building Contract Hash Data \033[0m"
+# requires cardano-cli
 cardano-cli transaction policyid --script-file contracts/perma_lock_contract.plutus > hashes/perma_lock.hash
 
 echo -e "\033[1;33m Perma Lock Contract Hash: $(cat hashes/perma_lock.hash) \033[0m"
