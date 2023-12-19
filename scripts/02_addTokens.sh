@@ -6,7 +6,7 @@ cli=$(cat ./data/path_to_cli.sh)
 testnet_magic=$(cat ./data/testnet.magic)
 
 if [[ $# -eq 0 ]] ; then
-    echo -e "\n \033[0;31m Please Supply A Token Amount \033[0m \n";
+    echo -e "\n \033[0;31m Please Supply A Token Amount Like ./02_addTokens.sh 123 \033[0m \n";
     exit
 fi
 
@@ -55,7 +55,6 @@ locking_tkn=$(jq -r '.lockingTkn' ../start_info.json)
 script_lovelace=$(jq '[.[] | .value.lovelace] | add' ./tmp/script_utxo.json)
 # get the current token amount but account for numbers below 2^63 -1
 script_token=$(python -c "import json; data=json.load(open('./tmp/script_utxo.json')); print(next((item['value']['${locking_pid}']['${locking_tkn}'] for item in data.values() if '${locking_pid}' in item['value'] and '${locking_tkn}' in item['value']['${locking_pid}']), 0))")
-echo $script_token
 
 # should handle large numbers just fine
 token_amt=$(echo "${script_token} + ${1}" | bc)
