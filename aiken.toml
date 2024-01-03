@@ -1,7 +1,7 @@
-name = "aiken-lang/perma-lock"
+name = "Dripdropz/perma-lock"
 version = "1.0.0"
-license = "Apache-2.0"
-description = "Aiken contracts for project 'aiken-lang/perma-lock'"
+license = "GPL-3.0"
+description = "Aiken contracts for project 'Dripdropz/perma-lock'"
 
 [repository]
 user = "aiken-lang"

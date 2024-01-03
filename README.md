@@ -57,6 +57,4 @@ To add tokens to the contract:
 
 The command above locks 123,456,789 tokens into the contract, as specified in the `start_info.json`.
 
-If the debug endpoint is set to `True` within the `perma.ak` script then the `debug.sh` script will allow a user to remove the perma locked utxo. This is for testing only and should be changed to `False` at production.
-
 > ⚠️ **Caution**: This contract is designed to lock tokens irreversibly. Ensure you understand the implications before using.
