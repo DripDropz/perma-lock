@@ -1,6 +1,8 @@
 # Perma Lock
 
-`Perma Lock` is a contract that permanently locks a specific token, allowing users to add tokens but preventing any withdrawals. Once tokens are locked in this contract, they can't be removed.
+`Perma Lock FT` is a contract that permanently locks a specific token known at compile time, allowing users to add tokens but preventing any withdrawals. Once tokens are locked in this contract, they can't be removed. This contract is great for fungible tokens because as it minimizes the minimum required Lovelace and forces the minimum required Lovelace to be constant. The transaction fees are nearly constant as it strongly depends on the number of UTxOs inside the transaction and not necessarily the computational units.
+
+`Perma Lock Tkn` is a contract that permanently locks any token, allowing users to add any token to the contract but prevents any withdrawals. Once tokens are locked in this contract, they can't be removed. This contract is great for non-fungible tokens and arbitrary tokens as any specific token can be added to the UTxO. The minimum required lovelace is not constant and is increased as needed during transaction creation. The transaction fees will always be increasing as it strongly depends on the number of tokens on the UTxO and the number of UTxOs inside the transaction.
 
 ## **Prerequisites**
 - Ensure you have `ADA` available for funding the wallets.
@@ -8,22 +10,23 @@
 
 ## **Configuration**
 
-Begin by specifying the token details in `start_info.json`:
+Configuring the `Perma Lock FT` contract begins by specifying the token details inside `start_info.json`:
 
 ```json
 {
-  "__comment1__": "This is the locking token for the contract.",
-  "lockingPid": "beec4fac1e41e603f4a8620d7864c1e2d55a2b9ae5522b675cfa6c52",
-  "lockingTkn": "001bc280001af8787e4ae5450b462441e2f2626af48fd9faf1c500fbbf3d0737",
-  "__comment2__": "This is maximum amount of the token in existence.",
-  "maxTknAmt": 100000000
+  "__comment1__": "This is the ft to lock for the perma lock ft contract",
+  "lockingPid": "954fe5769e9eb8dad54c99f8d62015c813c24f229a4d98dbf05c28b9",
+  "lockingTkn": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
+  "__comment2__": "This is maximum amount of the ft in existence.",
+  "maxTknAmt": 9223372036854775807
 }
 ```
 
 - The maximum allowed integer for `maxTknAmt` is $2^{63} - 1$.
 
-## **Setup**
+The `Perma Lock Tkn` does not need to be configured.
 
+## **Setup**
 
 1. Execute the `complete_build.sh` script to prepare the environment.
    
@@ -35,7 +38,14 @@ Begin by specifying the token details in `start_info.json`:
 ./create_testnet_wallet.sh wallets/user-wallet
 ```
 
-3. Fund the wallets. The `user-wallet` will store the tokens you intend to add to the perma lock contract. The `collat-wallet` needs 5 ADA and the `reference-wallet` needs at least 10 ADA.
+3. Fund the wallets. The `user-wallet` will store the tokens you intend to add to the perma lock contracts. The `collat-wallet` needs 5 ADA and the `reference-wallet` needs at least 20 ADA.
+
+4. Create the script references.
+
+5. Change directory into either the `lock_ft` or `lock_tkn`.
+
+6. Create the perma locked UTxO required for the contract in use.
+
 
 - The happy path assumes a synced testnet node. 
 - Please update the `data/path_to_cli.sh` and `data/path_to_socket.sh` files to match your current `cardano-cli` and `node.socket` path.
@@ -46,15 +56,23 @@ Begin by specifying the token details in `start_info.json`:
 The `scripts` directory contains sequential scripts for a smooth execution. They facilitate:
 
 - Setting up the reference wallet.
-- Creating the perma-locked UTXO.
-- Depositing tokens into the contract.
+- Folders containing scripts for the perma-locked contracts.
+- Depositing tokens into the contracts.
 
-To add tokens to the contract:
+To add tokens to the `Perma Lock FT` contract:
 
 ```bash
-./02_addTokens.sh 123456789
+./02_permaLockFT.sh 123456789
 ```
 
 The command above locks 123,456,789 tokens into the contract, as specified in the `start_info.json`.
+
+To add tokens to the `Perma Lock Tkn` contract:
+
+```bash
+./02_permaLockTkn.sh $policy_id $token_name $amount
+```
+
+The command above locks 123,456,789 tokens into the contract, as specified by the `policy_id` and `token_name`.
 
 > ⚠️ **Caution**: This contract is designed to lock tokens irreversibly. Ensure you understand the implications before using.
