@@ -5,18 +5,27 @@ export CARDANO_NODE_SOCKET_PATH=$(cat ./data/path_to_socket.sh)
 cli=$(cat ./data/path_to_cli.sh)
 testnet_magic=$(cat ./data/testnet.magic)
 
-# perma lock contract
-script_path="../contracts/perma_lock_contract.plutus"
-script_address=$(${cli} address build --payment-script-file ${script_path} --testnet-magic ${testnet_magic})
+# perma lock ft contract
+perma_lock_ft_script_path="../contracts/perma_lock_ft_contract.plutus"
+perma_lock_ft_script_address=$(${cli} address build --payment-script-file ${perma_lock_ft_script_path} --testnet-magic ${testnet_magic})
+
+# perma lock tkn contract
+perma_lock_tkn_script_path="../contracts/perma_lock_tkn_contract.plutus"
+perma_lock_tkn_script_address=$(${cli} address build --payment-script-file ${perma_lock_tkn_script_path} --testnet-magic ${testnet_magic})
 
 ${cli} query protocol-parameters --testnet-magic ${testnet_magic} --out-file ./tmp/protocol.json
 ${cli} query tip --testnet-magic ${testnet_magic} | jq
 ${cli} query tx-mempool info --testnet-magic ${testnet_magic} | jq
 
 #
-echo -e "\033[1;35m\nPerma Lock Script Address: \033[0m"
-echo -e "\n \033[1;32m ${script_address} \033[0m \n";
-${cli} query utxo --address ${script_address} --testnet-magic ${testnet_magic}
+echo -e "\033[1;35m\nPerma Lock FT Script Address: \033[0m"
+echo -e "\n \033[1;32m ${perma_lock_ft_script_address} \033[0m \n";
+${cli} query utxo --address ${perma_lock_ft_script_address} --testnet-magic ${testnet_magic}
+
+#
+echo -e "\033[1;35m\nPerma Lock Tkn Script Address: \033[0m"
+echo -e "\n \033[1;32m ${perma_lock_tkn_script_address} \033[0m \n";
+${cli} query utxo --address ${perma_lock_tkn_script_address} --testnet-magic ${testnet_magic}
 
 # Loop through each -wallet folder
 for wallet_folder in wallets/*-wallet; do

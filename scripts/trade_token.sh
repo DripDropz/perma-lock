@@ -50,11 +50,11 @@ echo -e "\033[0;36m Building Tx \033[0m"
 FEE=$(${cli} transaction build \
     --babbage-era \
     --out-file ./tmp/tx.draft \
-    --change-address ${sender_address} \
+    --change-address ${receiver_address} \
     --tx-in ${seller_tx_in} \
-    --tx-out="${tokens_to_be_traded}" \
     --testnet-magic ${testnet_magic})
 
+    # --tx-out="${tokens_to_be_traded}" \
 IFS=':' read -ra VALUE <<< "${FEE}"
 IFS=' ' read -ra FEE <<< "${VALUE[1]}"
 FEE=${FEE[1]}
