@@ -26,16 +26,16 @@ echo Adding ${asset_amt} ${asset_pid}.${asset_tkn}
 
 python -c "
 import json
-data=json.load(open('../data/add-tkn-redeemer.json', 'r'))
+data=json.load(open('../data/add-nft-redeemer.json', 'r'))
 data['fields'][0]['fields'][0]['bytes'] = '$asset_pid'
 data['fields'][0]['fields'][1]['bytes'] = '$asset_tkn'
 data['fields'][0]['fields'][2]['int'] = $asset_amt
-json.dump(data, open('../data/add-tkn-redeemer.json', 'w'), indent=2)
+json.dump(data, open('../data/add-nft-redeemer.json', 'w'), indent=2)
 "
 
 # perma lock contract
-perma_lock_tkn_script_path="../../contracts/perma_lock_tkn_contract.plutus"
-perma_lock_tkn_script_address=$(${cli} address build --payment-script-file ${perma_lock_tkn_script_path} --testnet-magic ${testnet_magic})
+perma_lock_nft_script_path="../../contracts/perma_lock_nft_contract.plutus"
+perma_lock_nft_script_address=$(${cli} address build --payment-script-file ${perma_lock_nft_script_path} --testnet-magic ${testnet_magic})
 
 # user wallet
 user_path="user-wallet"
@@ -48,19 +48,21 @@ collat_pkh=$(${cli} address key-hash --payment-verification-key-file ../wallets/
 
 echo -e "\033[0;36m Gathering Script UTxO Information  \033[0m"
 ${cli} query utxo \
-    --address ${perma_lock_tkn_script_address} \
+    --address ${perma_lock_nft_script_address} \
     --testnet-magic ${testnet_magic} \
     --out-file ../tmp/script_utxo.json
 
 # transaction variables
 TXNS=$(jq length ../tmp/script_utxo.json)
 if [ "${TXNS}" -eq "0" ]; then
-   echo -e "\n \033[0;31m NO UTxOs Found At ${perma_lock_tkn_script_address} \033[0m \n";
+   echo -e "\n \033[0;31m NO UTxOs Found At ${perma_lock_nft_script_address} \033[0m \n";
    exit;
 fi
 TXIN=$(jq -r --arg alltxin "" 'keys[] | . + $alltxin + " --tx-in"' ../tmp/script_utxo.json)
 script_tx_in=${TXIN::-8}
 
+unique_policies=$(jq 'to_entries[] | {key: .key, value_count: (.value.value | length)} | .value_count' ../tmp/script_utxo.json)
+echo There are ${unique_policies} policies on the UTxO
 
 # this should work for the min lovelace
 current_token_amt=$(python -c "
@@ -109,9 +111,9 @@ if [ -z "$token_string" ]; then
         --babbage-era \
         --protocol-params-file ../tmp/protocol.json \
         --tx-out-inline-datum-file ../data/datum.json \
-        --tx-out="${perma_lock_tkn_script_address} + 5000000 + ${tokens}" | tr -dc '0-9')
+        --tx-out="${perma_lock_nft_script_address} + 5000000 + ${tokens}" | tr -dc '0-9')
 
-    perma_lock_tkn_script_address_out="${perma_lock_tkn_script_address} + ${min_utxo_value} + ${tokens}"
+    perma_lock_nft_script_address_out="${perma_lock_nft_script_address} + ${min_utxo_value} + ${tokens}"
 else
     tokens="${token_amt} ${asset_pid}.${asset_tkn} + ${token_string}"
     # You can also perform other actions here if needed
@@ -120,12 +122,12 @@ else
         --babbage-era \
         --protocol-params-file ../tmp/protocol.json \
         --tx-out-inline-datum-file ../data/datum.json \
-        --tx-out="${perma_lock_tkn_script_address} + 5000000 + ${tokens}" | tr -dc '0-9')
+        --tx-out="${perma_lock_nft_script_address} + 5000000 + ${tokens}" | tr -dc '0-9')
 
-    perma_lock_tkn_script_address_out="${perma_lock_tkn_script_address} + ${min_utxo_value} + ${tokens}"
+    perma_lock_nft_script_address_out="${perma_lock_nft_script_address} + ${min_utxo_value} + ${tokens}"
 fi
 
-echo "Script OUTPUT: "${perma_lock_tkn_script_address_out}
+echo "Script OUTPUT: "${perma_lock_nft_script_address_out}
 
 echo -e "\033[0;36m Gathering User UTxO Information  \033[0m"
 ${cli} query utxo \
@@ -156,7 +158,7 @@ fi
 collat_utxo=$(jq -r 'keys[0]' ../tmp/collat_utxo.json)
 
 # get script reference
-script_ref_utxo=$(${cli} transaction txid --tx-file ../tmp/perma-lock-tkn-reference-utxo.signed)
+script_ref_utxo=$(${cli} transaction txid --tx-file ../tmp/perma-lock-nft-reference-utxo.signed)
 
 # exit
 echo -e "\033[0;36m Building Tx \033[0m"
@@ -170,8 +172,8 @@ FEE=$(${cli} transaction build \
     --spending-tx-in-reference="${script_ref_utxo}#1" \
     --spending-plutus-script-v2 \
     --spending-reference-tx-in-inline-datum-present \
-    --spending-reference-tx-in-redeemer-file ../data/add-tkn-redeemer.json \
-    --tx-out="${perma_lock_tkn_script_address_out}" \
+    --spending-reference-tx-in-redeemer-file ../data/add-nft-redeemer.json \
+    --tx-out="${perma_lock_nft_script_address_out}" \
     --tx-out-inline-datum-file ../data/datum.json  \
     --required-signer-hash ${collat_pkh} \
     --testnet-magic ${testnet_magic})

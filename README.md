@@ -2,7 +2,7 @@
 
 `Perma Lock FT` is a contract that permanently locks a specific token known at compile time, allowing users to add tokens but preventing any withdrawals. Once tokens are locked in this contract, they can't be removed. This contract is great for fungible tokens because as it minimizes the minimum required Lovelace and forces the minimum required Lovelace to be constant. The transaction fees are nearly constant as it strongly depends on the number of UTxOs inside the transaction and not necessarily the computational units.
 
-`Perma Lock Tkn` is a contract that permanently locks any token, allowing users to add any token to the contract but prevents any withdrawals. Once tokens are locked in this contract, they can't be removed. This contract is great for non-fungible tokens and arbitrary tokens as any specific token can be added to the UTxO. The minimum required lovelace is not constant and is increased as needed during transaction creation. The transaction fees will always be increasing as it strongly depends on the number of tokens on the UTxO and the number of UTxOs inside the transaction.
+`Perma Lock NFT` is a contract that permanently locks any token, allowing users to add any token to the contract but prevents any withdrawals. Once tokens are locked in this contract, they can't be removed. This contract is great for non-fungible tokens and arbitrary tokens as any specific token can be added to the UTxO. The minimum required lovelace is not constant and is increased as needed during transaction creation. The transaction fees will always be increasing as it strongly depends on the number of tokens on the UTxO and the number of UTxOs inside the transaction.
 
 ## **Prerequisites**
 - Ensure you have `ADA` available for funding the wallets.
@@ -16,15 +16,15 @@ Configuring the `Perma Lock FT` contract begins by specifying the token details 
 {
   "__comment1__": "This is the ft to lock for the perma lock ft contract",
   "lockingPid": "954fe5769e9eb8dad54c99f8d62015c813c24f229a4d98dbf05c28b9",
-  "lockingTkn": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
+  "lockingNFT": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
   "__comment2__": "This is maximum amount of the ft in existence.",
-  "maxTknAmt": 9223372036854775807
+  "maxNFTAmt": 9223372036854775807
 }
 ```
 
-- The maximum allowed integer for `maxTknAmt` is $2^{63} - 1$.
+- The maximum allowed integer for `maxNFTAmt` is $2^{63} - 1$.
 
-The `Perma Lock Tkn` does not need to be configured.
+The `Perma Lock NFT` does not need to be configured.
 
 ## **Setup**
 
@@ -42,7 +42,7 @@ The `Perma Lock Tkn` does not need to be configured.
 
 4. Create the script references.
 
-5. Change directory into either the `lock_ft` or `lock_tkn`.
+5. Change directory into either the `lock_ft` or `lock_nft`.
 
 6. Create the perma locked UTxO required for the contract in use.
 
@@ -67,12 +67,12 @@ To add tokens to the `Perma Lock FT` contract:
 
 The command above locks 123,456,789 tokens into the contract, as specified in the `start_info.json`.
 
-To add tokens to the `Perma Lock Tkn` contract:
+To add tokens to the `Perma Lock NFT` contract:
 
 ```bash
-./02_permaLockTkn.sh $policy_id $token_name $amount
+./02_permaLockNFT.sh $policy_id $token_name $amount
 ```
 
-The command above locks 123,456,789 tokens into the contract, as specified by the `policy_id` and `token_name`.
+The command above locks some amount of tokens into the contract, as specified by the `policy_id` and `token_name`.
 
 > ⚠️ **Caution**: This contract is designed to lock tokens irreversibly. Ensure you understand the implications before using.

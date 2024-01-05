@@ -5,7 +5,7 @@ use assist/count
 use assist/find
 use assist/payout
 
-// redeemer just needs to add in more tokens but we need to
+// redeemer needs to add an integer amount of some token
 type Redeemer {
   add_amt: Int,
 }
@@ -33,17 +33,18 @@ validator(lock_pid: PolicyId, lock_tkn: AssetName) {
         // this silent fails for anything coming back that isn't Void
         expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
         //
-        // add some tokens and send it back to the contract
+        // add some tokens to this value and send that value back to the contract
         //
         and {
-          // only can add tokens to this value
-          add_amt > 0,
-          // send exactly that value back to this address; ada doesn't change here
-          payout.exact(this_addr, that_value, tx.outputs),
           // single script input
           count.inputs_by_addr(tx.inputs, this_addr, 1),
           // single script output
           count.outputs_by_addr(tx.outputs, this_addr, 1),
+          // only can add tokens to this value
+          add_amt > 0,
+          // send exactly that value back to this address
+          // ada doesn't change here!
+          payout.exact(this_addr, that_value, tx.outputs),
         }
       }
       // anything else fails

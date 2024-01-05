@@ -11,7 +11,7 @@ ${cli} query protocol-parameters --testnet-magic ${testnet_magic} --out-file ./t
 
 # contract path
 perma_lock_ft_script_path="../contracts/perma_lock_ft_contract.plutus"
-perma_lock_tkn_script_path="../contracts/perma_lock_tkn_contract.plutus"
+perma_lock_nft_script_path="../contracts/perma_lock_nft_contract.plutus"
 
 # Addresses
 reference_address=$(cat ./wallets/reference-wallet/payment.addr)
@@ -25,13 +25,13 @@ perma_lock_ft_min_utxo=$(${cli} transaction calculate-min-required-utxo \
 
 perma_lock_ft_script_reference_utxo="${script_reference_address} + ${perma_lock_ft_min_utxo}"
 
-perma_lock_tkn_min_utxo=$(${cli} transaction calculate-min-required-utxo \
+perma_lock_nft_min_utxo=$(${cli} transaction calculate-min-required-utxo \
     --babbage-era \
     --protocol-params-file ./tmp/protocol.json \
-    --tx-out-reference-script-file ${perma_lock_tkn_script_path} \
+    --tx-out-reference-script-file ${perma_lock_nft_script_path} \
     --tx-out="${script_reference_address} + 1000000" | tr -dc '0-9')
 
-perma_lock_tkn_script_reference_utxo="${script_reference_address} + ${perma_lock_tkn_min_utxo}"
+perma_lock_nft_script_reference_utxo="${script_reference_address} + ${perma_lock_nft_min_utxo}"
 
 #
 # exit
@@ -97,7 +97,7 @@ ${cli} transaction sign \
 nextUTxO=$(${cli} transaction txid --tx-body-file ./tmp/tx.draft)
 echo -e "\nPerma Lock FT Script:" ${nextUTxO}#1
 
-echo -e "\nCreating Perma Lock Tkn Script:" ${perma_lock_tkn_script_reference_utxo}
+echo -e "\nCreating Perma Lock NFT Script:" ${perma_lock_nft_script_reference_utxo}
 echo -e "\033[0;36m Building Tx \033[0m"
 ${cli} transaction build-raw \
     --babbage-era \
@@ -105,8 +105,8 @@ ${cli} transaction build-raw \
     --out-file ./tmp/tx.draft \
     --tx-in="${nextUTxO}#0" \
     --tx-out="${reference_address} + ${firstReturn}" \
-    --tx-out="${perma_lock_tkn_script_reference_utxo}" \
-    --tx-out-reference-script-file ${perma_lock_tkn_script_path} \
+    --tx-out="${perma_lock_nft_script_reference_utxo}" \
+    --tx-out-reference-script-file ${perma_lock_nft_script_path} \
     --fee 900000
 
 FEE=$(cardano-cli transaction calculate-min-fee --tx-body-file ./tmp/tx.draft --testnet-magic ${testnet_magic} --protocol-params-file ./tmp/protocol.json --tx-in-count 1 --tx-out-count 2 --witness-count 1)
@@ -114,7 +114,7 @@ FEE=$(cardano-cli transaction calculate-min-fee --tx-body-file ./tmp/tx.draft --
 fee=$(echo $FEE | rev | cut -c 9- | rev)
 
 #
-secondReturn=$((${firstReturn} - ${perma_lock_tkn_min_utxo} - ${fee}))
+secondReturn=$((${firstReturn} - ${perma_lock_nft_min_utxo} - ${fee}))
 
 ${cli} transaction build-raw \
     --babbage-era \
@@ -122,8 +122,8 @@ ${cli} transaction build-raw \
     --out-file ./tmp/tx.draft \
     --tx-in="${nextUTxO}#0" \
     --tx-out="${reference_address} + ${secondReturn}" \
-    --tx-out="${perma_lock_tkn_script_reference_utxo}" \
-    --tx-out-reference-script-file ${perma_lock_tkn_script_path} \
+    --tx-out="${perma_lock_nft_script_reference_utxo}" \
+    --tx-out-reference-script-file ${perma_lock_nft_script_path} \
     --fee ${fee}
 
 echo -e "\033[0;36m Signing \033[0m"
@@ -134,7 +134,7 @@ ${cli} transaction sign \
     --testnet-magic ${testnet_magic}
 
 nextUTxO=$(${cli} transaction txid --tx-body-file ./tmp/tx.draft)
-echo -e "\nPerma Lock Tkn Script:" ${nextUTxO}#1
+echo -e "\nPerma Lock NFT Script:" ${nextUTxO}#1
 #
 # exit
 #
@@ -148,6 +148,6 @@ ${cli} transaction submit \
     --tx-file ./tmp/tx-2.signed
 
 cp ./tmp/tx-1.signed ./tmp/perma-lock-ft-reference-utxo.signed
-cp ./tmp/tx-2.signed ./tmp/perma-lock-tkn-reference-utxo.signed
+cp ./tmp/tx-2.signed ./tmp/perma-lock-nft-reference-utxo.signed
 
 echo -e "\033[0;32m\nDone! \033[0m"

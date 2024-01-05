@@ -45,10 +45,10 @@ aiken blueprint convert -v perma_lock_ft.params > contracts/perma_lock_ft_contra
 ###############################################################################
 ###############################################################################
 
-echo -e "\033[1;34m\nBuilding FT Contract \033[0m"
-echo -e "\033[1;33m Convert Perma Lock Tkn Contract \033[0m"
+echo -e "\033[1;34m\nBuilding NFT Contract \033[0m"
+echo -e "\033[1;33m Convert Perma Lock NFT Contract \033[0m"
 
-aiken blueprint convert -v perma_lock_tkn.params > contracts/perma_lock_tkn_contract.plutus
+aiken blueprint convert -v perma_lock_nft.params > contracts/perma_lock_nft_contract.plutus
 
 ###############################################################################
 ###############################################################################
@@ -58,10 +58,10 @@ aiken blueprint convert -v perma_lock_tkn.params > contracts/perma_lock_tkn_cont
 echo -e "\033[1;34m\nBuilding Contract Hash Data \033[0m"
 
 cardano-cli transaction policyid --script-file contracts/perma_lock_ft_contract.plutus > hashes/perma_lock_ft.hash
-cardano-cli transaction policyid --script-file contracts/perma_lock_tkn_contract.plutus > hashes/perma_lock_tkn.hash
-
 echo -e "\033[1;33m Perma Lock FT Contract Hash: $(cat hashes/perma_lock_ft.hash) \033[0m"
-echo -e "\033[1;33m Perma Lock Tkn Contract Hash: $(cat hashes/perma_lock_tkn.hash) \033[0m"
+
+cardano-cli transaction policyid --script-file contracts/perma_lock_nft_contract.plutus > hashes/perma_lock_nft.hash
+echo -e "\033[1;33m Perma Lock NFT Contract Hash: $(cat hashes/perma_lock_nft.hash) \033[0m"
 
 # end of build
 echo -e "\033[1;32m\nBuilding Complete! \033[0m"

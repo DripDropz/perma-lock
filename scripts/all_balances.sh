@@ -10,8 +10,8 @@ perma_lock_ft_script_path="../contracts/perma_lock_ft_contract.plutus"
 perma_lock_ft_script_address=$(${cli} address build --payment-script-file ${perma_lock_ft_script_path} --testnet-magic ${testnet_magic})
 
 # perma lock tkn contract
-perma_lock_tkn_script_path="../contracts/perma_lock_tkn_contract.plutus"
-perma_lock_tkn_script_address=$(${cli} address build --payment-script-file ${perma_lock_tkn_script_path} --testnet-magic ${testnet_magic})
+perma_lock_nft_script_path="../contracts/perma_lock_nft_contract.plutus"
+perma_lock_nft_script_address=$(${cli} address build --payment-script-file ${perma_lock_nft_script_path} --testnet-magic ${testnet_magic})
 
 ${cli} query protocol-parameters --testnet-magic ${testnet_magic} --out-file ./tmp/protocol.json
 ${cli} query tip --testnet-magic ${testnet_magic} | jq
@@ -23,9 +23,9 @@ echo -e "\n \033[1;32m ${perma_lock_ft_script_address} \033[0m \n";
 ${cli} query utxo --address ${perma_lock_ft_script_address} --testnet-magic ${testnet_magic}
 
 #
-echo -e "\033[1;35m\nPerma Lock Tkn Script Address: \033[0m"
-echo -e "\n \033[1;32m ${perma_lock_tkn_script_address} \033[0m \n";
-${cli} query utxo --address ${perma_lock_tkn_script_address} --testnet-magic ${testnet_magic}
+echo -e "\033[1;35m\nPerma Lock NFT Script Address: \033[0m"
+echo -e "\n \033[1;32m ${perma_lock_nft_script_address} \033[0m \n";
+${cli} query utxo --address ${perma_lock_nft_script_address} --testnet-magic ${testnet_magic}
 
 # Loop through each -wallet folder
 for wallet_folder in wallets/*-wallet; do
