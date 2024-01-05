@@ -3,5 +3,5 @@
   "lockingPid": "ceccf685d42ba09c671488f9c92337956b0c8065ad6cd8bf906defc8",
   "lockingTkn": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
   "__comment2__": "This is maximum amount of the ft in existence.",
-  "maxTknAmt": 9223372036854775807
+  "maxTokenAmt": 9223372036854775807
 }

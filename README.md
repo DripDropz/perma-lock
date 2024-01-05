@@ -18,11 +18,11 @@ Configuring the `Perma Lock FT` contract begins by specifying the token details 
   "lockingPid": "954fe5769e9eb8dad54c99f8d62015c813c24f229a4d98dbf05c28b9",
   "lockingNFT": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
   "__comment2__": "This is maximum amount of the ft in existence.",
-  "maxNFTAmt": 9223372036854775807
+  "maxTokenAmt": 9223372036854775807
 }
 ```
 
-- The maximum allowed integer for `maxNFTAmt` is $2^{63} - 1$.
+- The maximum allowed integer for `maxTokenAmt` is $2^{63} - 1$.
 
 The `Perma Lock NFT` does not need to be configured.
 

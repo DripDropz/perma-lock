@@ -17,7 +17,7 @@ user_pkh=$(${cli} address key-hash --payment-verification-key-file ../wallets/${
 # this is the maximum amount of tokens that could possible exist
 locking_pid=$(jq -r '.lockingPid' ../../start_info.json)
 locking_tkn=$(jq -r '.lockingTkn' ../../start_info.json)
-max_tkn_amt=$(jq -r '.maxTknAmt' ../../start_info.json)
+max_tkn_amt=$(jq -r '.maxTokenAmt' ../../start_info.json)
 worst_case_value="${max_tkn_amt} ${locking_pid}.${locking_tkn}"
 
 # calc the min ada required for the worst case value and datum
