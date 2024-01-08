@@ -5,6 +5,7 @@ The `Perma Lock FT` contract is designed to permanently lock a specific token, w
 The `Perma Lock NFT` contract is designed to permanently lock various types of tokens. It allows users to add tokens but prevents any withdrawals. Once tokens are locked in this contract, they cannot be removed. This flexibility makes the contract particularly beneficial for non-fungible and arbitrary tokens, as it can accommodate any token in the UTxO. Unlike the `Perma Lock FT`, the minimum required Lovelace in this contract is variable and must be adjusted during transaction creation. Transaction fees tend to increase over time, closely correlating with the number of tokens in the UTxO and the number of UTxOs involved in the transaction.
 
 ## **Prerequisites**
+
 - Ensure you have `ADA` available for funding the wallets.
 - Aiken, Python3, cardano-cli, jq, bc need to be installed for the happy path to function properly.
 
@@ -46,10 +47,9 @@ The `Perma Lock NFT` does not need to be configured.
 
 6. Create the perma locked UTxO required for the contract in use.
 
-
 - The happy path assumes a synced testnet node. 
-- Please update the `data/path_to_cli.sh` and `data/path_to_socket.sh` files to match your current `cardano-cli` and `node.socket` path.
-- The `all_balances.sh` script will display the testnet wallet addresses and UTxOs.
+- Please update the `scripts/data/path_to_cli.sh` and `scripts/data/path_to_socket.sh` files to match your current `cardano-cli` and `node.socket` path.
+- The `scripts/all_balances.sh` script will display the testnet wallet addresses and UTxOs.
 
 ## **Usage**
 
