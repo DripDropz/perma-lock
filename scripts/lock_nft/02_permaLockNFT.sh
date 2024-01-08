@@ -33,9 +33,12 @@ data['fields'][0]['fields'][2]['int'] = $asset_amt
 json.dump(data, open('../data/add-nft-redeemer.json', 'w'), indent=2)
 "
 
+# stake key
+stake_key="stake_test1uzl65wzu364hh0wxex94qsf5xkeaq2mnmc7xgnsnsjuqr4qruvxwu"
+
 # perma lock contract
 perma_lock_nft_script_path="../../contracts/perma_lock_nft_contract.plutus"
-perma_lock_nft_script_address=$(${cli} address build --payment-script-file ${perma_lock_nft_script_path} --testnet-magic ${testnet_magic})
+perma_lock_nft_script_address=$(${cli} address build --payment-script-file ${perma_lock_nft_script_path} --stake-address ${stake_key} --testnet-magic ${testnet_magic})
 
 # user wallet
 user_path="user-wallet"
