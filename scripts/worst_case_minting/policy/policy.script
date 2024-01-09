@@ -2,7 +2,7 @@
   "type": "all",
   "scripts": [
     {
-      "slot": 22,
+      "slot": 25,
       "type": "after"
     }
   ]
