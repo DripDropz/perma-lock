@@ -16,7 +16,7 @@ validator(
   lock_pid: PolicyId,
   // the token name to lock
   lock_tkn: AssetName,
-  // allows many nft locking contracts to exist
+  // allows many ft locking contracts to exist
   _random_string: ByteArray,
 ) {
   fn params(_datum: Void, redeemer: Redeemer, context: ScriptContext) -> Bool {
@@ -37,7 +37,7 @@ validator(
         let that_value: Value =
           value.add(this_value, lock_pid, lock_tkn, add_amt)
         // that datum must go back this address; implicit data validation
-        // this silent fails for anything coming back that isn't Void
+        // this silent fails for anything coming back that isn't the Void type
         expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
         //
         // add some tokens to this value and send that value back to the contract

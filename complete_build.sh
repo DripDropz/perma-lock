@@ -30,11 +30,11 @@ echo -e "\033[1;34m\nBuilding FT Contract \033[0m"
 locking_pid=$(jq -r '.lockingPid' start_info.json)
 locking_tkn=$(jq -r '.lockingTkn' start_info.json)
 
-# one liner for correct cbor
-# requires cbor2
+# convert token info into proper cbor
 locking_pid_cbor=$(python3 -c "import cbor2;hex_string='${locking_pid}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 locking_tkn_cbor=$(python3 -c "import cbor2;hex_string='${locking_tkn}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
+# randomly generate a length 32 hex string
 random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
 random_cbor=$(python3 -c "import cbor2;hex_string='${random_string}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
@@ -51,6 +51,7 @@ aiken blueprint convert -v perma_lock_ft.params > contracts/perma_lock_ft_contra
 
 echo -e "\033[1;34m\nBuilding NFT Contract \033[0m"
 
+# randomly generate a length 32 hex string
 random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
 random_cbor=$(python3 -c "import cbor2;hex_string='${random_string}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 

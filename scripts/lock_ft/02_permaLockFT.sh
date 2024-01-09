@@ -10,7 +10,7 @@ if [[ $# -eq 0 ]] ; then
     exit
 fi
 
-if [[ ${1} -eq 0 ]] ; then
+if [[ ${1} -le 0 ]] ; then
     echo -e "\n \033[0;31m Token Amount Must Be Greater Than Zero \033[0m \n";
     exit
 fi

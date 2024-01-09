@@ -32,7 +32,7 @@ fn add_tokens_to_value(the_value: Value, tokens: Tokens) -> Value {
   }
 }
 
-// redeemer for adding an asset of type Token
+// redeemer for adding assets of type Tokens
 type Redeemer {
   assets: Tokens,
 }
@@ -58,7 +58,7 @@ validator(
         // calculate that value returning to this address
         let that_value: Value = add_tokens_to_value(this_value, assets)
         // that datum must go back this address; implicit data validation
-        // this silent fails for anything coming back that isn't Void
+        // this silent fails for anything coming back that isn't the Void type
         expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
         //
         // add a token to this value and send that value back to the contract
@@ -68,7 +68,7 @@ validator(
           count.inputs_by_addr(tx.inputs, this_addr, 1),
           // single script output
           count.outputs_by_addr(tx.outputs, this_addr, 1),
-          // send at least that value back to the contract
+          // send at least that value back to this address
           // ada can change here!
           payout.at_least(this_addr, that_value, tx.outputs),
         }
