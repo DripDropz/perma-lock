@@ -35,10 +35,14 @@ locking_tkn=$(jq -r '.lockingTkn' start_info.json)
 locking_pid_cbor=$(python3 -c "import cbor2;hex_string='${locking_pid}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 locking_tkn_cbor=$(python3 -c "import cbor2;hex_string='${locking_tkn}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
+random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
+random_cbor=$(python3 -c "import cbor2;hex_string='${random_string}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
+
 echo -e "\033[1;33m Convert Perma Lock FT Contract \033[0m"
 
 aiken blueprint apply -o plutus.json -v perma_lock_ft.params "${locking_pid_cbor}"
 aiken blueprint apply -o plutus.json -v perma_lock_ft.params "${locking_tkn_cbor}"
+aiken blueprint apply -o plutus.json -v perma_lock_ft.params "${random_cbor}"
 aiken blueprint convert -v perma_lock_ft.params > contracts/perma_lock_ft_contract.plutus
 
 ###############################################################################
@@ -46,11 +50,11 @@ aiken blueprint convert -v perma_lock_ft.params > contracts/perma_lock_ft_contra
 ###############################################################################
 
 echo -e "\033[1;34m\nBuilding NFT Contract \033[0m"
-echo -e "\033[1;33m Convert Perma Lock NFT Contract \033[0m"
 
 random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
 random_cbor=$(python3 -c "import cbor2;hex_string='${random_string}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
+echo -e "\033[1;33m Convert Perma Lock NFT Contract \033[0m"
 aiken blueprint apply -o plutus.json -v perma_lock_nft.params "${random_cbor}"
 aiken blueprint convert -v perma_lock_nft.params > contracts/perma_lock_nft_contract.plutus
 

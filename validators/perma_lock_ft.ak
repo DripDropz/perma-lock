@@ -11,7 +11,14 @@ type Redeemer {
 }
 
 // compile the validator for a specific policy id and asset name to lock permanently
-validator(lock_pid: PolicyId, lock_tkn: AssetName) {
+validator(
+  // the policy id to lock
+  lock_pid: PolicyId,
+  // the token name to lock
+  lock_tkn: AssetName,
+  // allows many nft locking contracts to exist
+  _random_string: ByteArray,
+) {
   fn params(_datum: Void, redeemer: Redeemer, context: ScriptContext) -> Bool {
     when context.purpose is {
       // spend only
