@@ -27,12 +27,12 @@ echo Adding ${asset_amt} ${asset_pid}.${asset_tkn}
 python -c "
 import json
 data=json.load(open('../data/add-nft-redeemer.json', 'r'))
-data['fields'][0]['fields'][0]['bytes'] = '$asset_pid'
-data['fields'][0]['fields'][1]['bytes'] = '$asset_tkn'
-data['fields'][0]['fields'][2]['int'] = $asset_amt
+data['fields'][0]['list'][0]['fields'][0]['bytes'] = '$asset_pid'
+data['fields'][0]['list'][0]['fields'][1]['bytes'] = '$asset_tkn'
+data['fields'][0]['list'][0]['fields'][2]['int'] = $asset_amt
 json.dump(data, open('../data/add-nft-redeemer.json', 'w'), indent=2)
 "
-
+# exit
 # stake key
 stake_key="stake_test1uzl65wzu364hh0wxex94qsf5xkeaq2mnmc7xgnsnsjuqr4qruvxwu"
 
