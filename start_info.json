@@ -1,6 +1,6 @@
 {
   "__comment1__": "This is the ft to lock for the perma lock ft contract",
-  "lockingPid": "9937525324bb201508dd616f60d241ab21d25e767f567153ee26066e",
+  "lockingPid": "8ee10f62501d7dab694907722a515d112d03aa715ba817aa96f6f778",
   "lockingTkn": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
   "__comment2__": "This is maximum amount of the ft in existence.",
   "maxTokenAmt": 9223372036854775807
