@@ -1,3 +1,11 @@
+//// A contract designed for permanently locking arbitrary tokens to a UTxO.
+//// The idea here is to be able to perma lock nfts, spam, scam, or whatever.
+//// The minimum lovelace required for this solution will gradually increase
+//// as the size of the UTxO grows. Once a UTxO is full a new UTxO should be 
+//// made within the same contract. The random string allows many general
+//// token locks to coexist inside a single transaction.
+////
+
 use aiken/transaction.{Input, ScriptContext, Spend, Transaction}
 use aiken/transaction/credential.{Address}
 use aiken/transaction/value.{Value}
@@ -6,6 +14,8 @@ use assist/find
 use assist/payout
 use assist/types.{Token}
 
+/// Tokens is a list of the Token type. It should be a safe way to represent
+/// a Value type inside the redeemer.
 type Tokens =
   List<Token>
 
@@ -32,13 +42,14 @@ fn add_tokens_to_value(the_value: Value, tokens: Tokens) -> Value {
   }
 }
 
-// redeemer for adding assets of type Tokens
+/// The redeemer adds a list of tokens to the UTxO.
 type Redeemer {
   assets: Tokens,
 }
 
+/// Compile the validator to a random bytearray.
 validator(
-  // allows many nft locking contracts to exist
+  // a random string that allows many locking contracts to coexist
   _random_string: ByteArray,
 ) {
   fn params(_datum: Void, redeemer: Redeemer, context: ScriptContext) -> Bool {
@@ -57,11 +68,10 @@ validator(
         let this_value: Value = this_input.output.value
         // calculate that value returning to this address
         let that_value: Value = add_tokens_to_value(this_value, assets)
-        // that datum must go back this address; implicit data validation
         // this silent fails for anything coming back that isn't the Void type
         expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
         //
-        // add a token to this value and send that value back to the contract
+        // Add a list of tokens to this value and send that value back to this address.
         //
         and {
           // single script input
@@ -69,7 +79,6 @@ validator(
           // single script output
           count.outputs_by_addr(tx.outputs, this_addr, 1),
           // send at least that value back to this address
-          // ada can change here!
           payout.at_least(this_addr, that_value, tx.outputs),
         }
       }
