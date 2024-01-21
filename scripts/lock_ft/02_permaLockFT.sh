@@ -20,9 +20,12 @@ token_amt=${1}
 # update the add amount but account for any size number up to 2^63 -1
 python -c "import json; data=json.load(open('../data/add-ft-redeemer.json', 'r')); data['fields'][0]['int'] = $token_amt; json.dump(data, open('../data/add-ft-redeemer.json', 'w'), indent=2)"
 
+# stake key
+stake_key=$(jq -r '.stakeKey' ../../start_info.json)
+
 # perma lock contract
 perma_lock_ft_script_path="../../contracts/perma_lock_ft_contract.plutus"
-perma_lock_ft_script_address=$(${cli} address build --payment-script-file ${perma_lock_ft_script_path} --testnet-magic ${testnet_magic})
+perma_lock_ft_script_address=$(${cli} address build --payment-script-file ${perma_lock_ft_script_path} --stake-address ${stake_key} --testnet-magic ${testnet_magic})
 
 # user wallet
 user_path="user-wallet"

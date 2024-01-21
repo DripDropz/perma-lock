@@ -69,17 +69,17 @@ validator(
         // calculate that value returning to this address
         let that_value: Value = add_tokens_to_value(this_value, assets)
         // this silent fails for anything coming back that isn't the Void type
-        expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
+        // expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
         //
         // Add a list of tokens to this value and send that value back to this address.
         //
         and {
           // single script input
-          count.inputs_by_addr(tx.inputs, this_addr, 1),
+          count.inputs_by_addr(tx.inputs, this_addr, 1)?,
           // single script output
-          count.outputs_by_addr(tx.outputs, this_addr, 1),
+          count.outputs_by_addr(tx.outputs, this_addr, 1)?,
           // send at least that value back to this address
-          payout.at_least(this_addr, that_value, tx.outputs),
+          payout.at_least(this_addr, that_value, tx.outputs)?,
         }
       }
       // anything else fails
