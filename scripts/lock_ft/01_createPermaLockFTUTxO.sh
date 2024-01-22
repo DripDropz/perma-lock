@@ -10,7 +10,7 @@ stake_key=$(jq -r '.stakeKey' ../../start_info.json)
 
 # perma lock contract
 perma_lock_ft_script_path="../../contracts/perma_lock_ft_contract.plutus"
-perma_lock_ft_script_address=$(${cli} address build --payment-script-file ${perma_lock_ft_script_path} --testnet-magic ${testnet_magic})
+perma_lock_ft_script_address=$(${cli} address build --payment-script-file ${perma_lock_ft_script_path} --stake-address ${stake_key} --testnet-magic ${testnet_magic})
 
 # collat, buyer, reference
 user_path="user-wallet"

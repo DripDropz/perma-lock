@@ -12,12 +12,7 @@ use aiken/transaction/value.{Value}
 use assist/count
 use assist/find
 use assist/payout
-use assist/types.{Token}
-
-/// Tokens is a list of the Token type. It should be a safe way to represent
-/// a Value type inside the redeemer.
-type Tokens =
-  List<Token>
+use assist/types/token.{Token, Tokens}
 
 /// Add a list of Token types to a Value type. This should be a very safe way to
 /// increment a value on a UTxO. The other option is having the redeemer be 
@@ -69,7 +64,7 @@ validator(
         // calculate that value returning to this address
         let that_value: Value = add_tokens_to_value(this_value, assets)
         // this silent fails for anything coming back that isn't the Void type
-        // expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
+        expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
         //
         // Add a list of tokens to this value and send that value back to this address.
         //

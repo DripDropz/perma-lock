@@ -32,7 +32,7 @@ data['fields'][0]['list'][0]['fields'][1]['bytes'] = '$asset_tkn'
 data['fields'][0]['list'][0]['fields'][2]['int'] = $asset_amt
 json.dump(data, open('../data/add-nft-redeemer.json', 'w'), indent=2)
 "
-# exit
+
 # stake key
 stake_key=$(jq -r '.stakeKey' ../../start_info.json)
 
