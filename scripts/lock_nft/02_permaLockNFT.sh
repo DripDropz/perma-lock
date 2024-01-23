@@ -32,9 +32,9 @@ data['fields'][0]['list'][0]['fields'][1]['bytes'] = '$asset_tkn'
 data['fields'][0]['list'][0]['fields'][2]['int'] = $asset_amt
 json.dump(data, open('../data/add-nft-redeemer.json', 'w'), indent=2)
 "
-# exit
+
 # stake key
-stake_key="stake_test1uzl65wzu364hh0wxex94qsf5xkeaq2mnmc7xgnsnsjuqr4qruvxwu"
+stake_key=$(jq -r '.stakeKey' ../../start_info.json)
 
 # perma lock contract
 perma_lock_nft_script_path="../../contracts/perma_lock_nft_contract.plutus"

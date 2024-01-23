@@ -76,3 +76,7 @@ To add tokens to the `Perma Lock NFT` contract:
 The command above locks some amount of tokens into the contract, as specified by the `policy_id` and `token_name`.
 
 > ⚠️ **Caution**: This contract is designed to lock tokens irreversibly. Ensure you understand the implications before using.
+
+## **Limits**
+
+Worst case for the nft lock is 64 unique policy ids. On pre-production, the UTxO `2981fdc49509b9cfc1c122b0dfc2563f29e49c2a07337ad55da3e2017a561124#0` is currently maxed out. The max memory parameter would have to be increased at the protocol level to account for more unique policy ids on the UTxO.
