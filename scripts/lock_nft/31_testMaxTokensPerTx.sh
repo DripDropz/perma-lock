@@ -5,24 +5,52 @@ export CARDANO_NODE_SOCKET_PATH=$(cat ../data/path_to_socket.sh)
 cli=$(cat ../data/path_to_cli.sh)
 testnet_magic=$(cat ../data/testnet.magic)
 
-# Check if less than 3 arguments are supplied
-if [[ $# -lt 3 ]] ; then
-    echo -e "\n \033[0;31m Please Supply At Least 3 Arguments: policy_id, token_name, amount \033[0m \n";
-    exit 1
-fi
 
-# Check if the third argument (amount) is not greater than zero
-if ! [[ ${3} =~ ^[0-9]+$ ]] || [[ ${3} -le 0 ]] ; then
-    echo -e "\n \033[0;31m Token Amount Must Be A Positive Number Greater Than Zero \033[0m \n";
-    exit 1
-fi
+wait_for_block_change() {
+    # Initial fetch of the current block
+    last_block=$(${cli} query tip --testnet-magic ${testnet_magic} | jq -r '.block')
+
+    # Loop indefinitely until a block change is detected
+    while true
+    do
+        # Fetch the current block
+        cur_block=$(${cli} query tip --testnet-magic ${testnet_magic} | jq -r '.block')
+
+        # Check if the current block has changed
+        if [ "$cur_block" != "$last_block" ]; then
+
+            tx_in_mempool=$(${cli} query tx-mempool info --testnet-magic ${testnet_magic} | jq -r '.numberOfTxs')
+            # Check if the current block has changed
+            if [ "$tx_in_mempool" == 0 ]; then
+                # Block has changed, exit the loop
+                echo "Continue."
+                break
+            fi
+        fi
+
+        # Sleep briefly to avoid hammering the command
+        sleep 1
+    done
+}
+
+wait_for_block_change
+
+for i in {1..36}
+do
+    # Call the other Bash script
+    pushd ../worst_case_minting/ > /dev/null
+    ./mintToken.sh
+    # Return to the previous directory
+    popd > /dev/null
+
+    wait_for_block_change
+done
 
 
-asset_pid=${1}
-asset_tkn=${2}
-asset_amt=${3}
-
-echo Adding ${asset_amt} ${asset_pid}.${asset_tkn}
+# user wallet
+user_path="user-wallet"
+user_address=$(cat ../wallets/${user_path}/payment.addr)
+user_pkh=$(${cli} address key-hash --payment-verification-key-file ../wallets/${user_path}/payment.vkey)
 
 echo -e "\033[0;36m Gathering User UTxO Information  \033[0m"
 ${cli} query utxo \
@@ -42,14 +70,9 @@ user_tx_in=${TXIN::-8}
 # get the user tokens and add all of them to the nft lock
 python ../py/tokens.py
 
-# python -c "
-# import json
-# data=json.load(open('../data/add-nft-redeemer.json', 'r'))
-# data['fields'][0]['list'][0]['fields'][0]['bytes'] = '$asset_pid'
-# data['fields'][0]['list'][0]['fields'][1]['bytes'] = '$asset_tkn'
-# data['fields'][0]['list'][0]['fields'][2]['int'] = $asset_amt
-# json.dump(data, open('../data/add-nft-redeemer.json', 'w'), indent=2)
-# "
+user_token_string=$(cat ../data/token_string.txt)
+
+echo $user_token_string
 
 # stake key
 stake_key=$(jq -r '.stakeKey' ../../start_info.json)
@@ -57,11 +80,6 @@ stake_key=$(jq -r '.stakeKey' ../../start_info.json)
 # perma lock contract
 perma_lock_nft_script_path="../../contracts/perma_lock_nft_contract.plutus"
 perma_lock_nft_script_address=$(${cli} address build --payment-script-file ${perma_lock_nft_script_path} --stake-address ${stake_key} --testnet-magic ${testnet_magic})
-
-# user wallet
-user_path="user-wallet"
-user_address=$(cat ../wallets/${user_path}/payment.addr)
-user_pkh=$(${cli} address key-hash --payment-verification-key-file ../wallets/${user_path}/payment.vkey)
 
 # collat wallet
 collat_address=$(cat ../wallets/collat-wallet/payment.addr)
@@ -86,25 +104,8 @@ unique_policies=$(jq 'to_entries[] | {key: .key, value_count: (.value.value | le
 echo There are ${unique_policies} policies on the UTxO
 
 # this should work for the min lovelace
-current_token_amt=$(python -c "
-import json
 
-with open('../tmp/script_utxo.json', 'r') as file:
-    data = json.load(file)
-
-asset_pid = '${asset_pid}'
-asset_tkn = '${asset_tkn}'
-
-script_token_value = next(
-    (item['value'][asset_pid][asset_tkn] for item in data.values() 
-     if asset_pid in item['value'] and asset_tkn in item['value'][asset_pid]), 
-    0
-)
-
-print(script_token_value)
-")
-
-token_string=$(python -c "
+script_token_string=$(python -c "
 import json
 
 with open('../tmp/script_utxo.json', 'r') as file:
@@ -115,17 +116,15 @@ for item in data.values():
     for pid, tokens in item['value'].items():
         if pid != 'lovelace':
             for tkn, amt in tokens.items():
-                if pid != '${asset_pid}' or tkn != '${asset_tkn}':
-                    result.append(f'{amt} {pid}.{tkn}')
+                result.append(f'{amt} {pid}.{tkn}')
 
 print(' + '.join(result))
 ")
 
 # should handle large numbers just fine
-token_amt=$(echo "${current_token_amt} + ${3}" | bc)
 
-if [ -z "$token_string" ]; then
-    tokens="${token_amt} ${asset_pid}.${asset_tkn}"
+if [ -z "$script_token_string" ]; then
+    tokens="$user_token_string"
     # You can also perform other actions here if needed
     # calc the min ada required for the worst case value and datum
     min_utxo_value=$(${cli} transaction calculate-min-required-utxo \
@@ -136,7 +135,7 @@ if [ -z "$token_string" ]; then
 
     perma_lock_nft_script_address_out="${perma_lock_nft_script_address} + ${min_utxo_value} + ${tokens}"
 else
-    tokens="${token_amt} ${asset_pid}.${asset_tkn} + ${token_string}"
+    tokens="${script_token_string} + ${user_token_string}"
     # You can also perform other actions here if needed
     # calc the min ada required for the worst case value and datum
     min_utxo_value=$(${cli} transaction calculate-min-required-utxo \
@@ -150,20 +149,7 @@ fi
 
 echo "Script OUTPUT: "${perma_lock_nft_script_address_out}
 
-echo -e "\033[0;36m Gathering User UTxO Information  \033[0m"
-${cli} query utxo \
-    --testnet-magic ${testnet_magic} \
-    --address ${user_address} \
-    --out-file ../tmp/user_utxo.json
-
-TXNS=$(jq length ../tmp/user_utxo.json)
-if [ "${TXNS}" -eq "0" ]; then
-   echo -e "\n \033[0;31m NO UTxOs Found At ${user_address} \033[0m \n";
-   exit;
-fi
-alltxin=""
-TXIN=$(jq -r --arg alltxin "" 'keys[] | . + $alltxin + " --tx-in"' ../tmp/user_utxo.json)
-user_tx_in=${TXIN::-8}
+# exit
 
 echo -e "\033[0;36m Gathering Collateral UTxO Information  \033[0m"
 ${cli} query utxo \

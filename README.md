@@ -79,4 +79,8 @@ The command above locks some amount of tokens into the contract, as specified by
 
 ## **Limits**
 
-Worst case for the nft lock is 64 unique policy ids. On pre-production, the UTxO `2981fdc49509b9cfc1c122b0dfc2563f29e49c2a07337ad55da3e2017a561124#0` is currently maxed out. The max memory parameter would have to be increased at the protocol level to account for more unique policy ids on the UTxO.
+Worst case for the nft lock is 64 unique policy ids. On pre-production, the UTxO `2981fdc49509b9cfc1c122b0dfc2563f29e49c2a07337ad55da3e2017a561124#0` is currently maxed out. 
+
+Worst case for the nft lock per transaction is 36. On pre-production, the UTxO `ff9b410414a5a5c0a2f63e9358b7299d296bb304ae579360dccf008357149809` shows the maximum amount of tokens for a single transaction. 
+
+The max memory parameter would have to be increased at the protocol level to account for more unique policy ids on the UTxO.

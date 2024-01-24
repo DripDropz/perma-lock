@@ -53,13 +53,13 @@ validator(
         //
         and {
           // single script input
-          count.inputs_by_addr(tx.inputs, this_addr, 1),
+          count.inputs_by_addr(tx.inputs, this_addr, 1)?,
           // single script output
-          count.outputs_by_addr(tx.outputs, this_addr, 1),
+          count.outputs_by_addr(tx.outputs, this_addr, 1)?,
           // only can add tokens to this value
-          add_amt > 0,
+          (add_amt > 0)?,
           // send exactly that value back to this address
-          payout.exact(this_addr, that_value, tx.outputs),
+          payout.exact(this_addr, that_value, tx.outputs)?,
         }
       }
       // anything else fails
