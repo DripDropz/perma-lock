@@ -5,29 +5,35 @@ import tempfile
 
 import cbor2
 import requests
+from bech32 import bech32_decode, convertbits
 
 
-def run_bech32(stake_key):
-    # Directory of the current script
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+def run_bech32(key: str) -> str:
+    """Run bech 32 on some key and return the raw hash.
 
-    # Path to the parent directory
-    parent_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
+    Args:
+        key (str): The key to decode.
 
-    # Path to the bech32 binary in the parent directory
-    bech32_path = os.path.join(parent_dir, 'bech32')
+    Returns:
+        str: The decoded raw hash.
+    """
+    try:
+        # Bech32 decode
+        _, data5 = bech32_decode(key)
 
-    # Run the bech32 command with the stake_key as input
-    result = subprocess.run([bech32_path], input=stake_key.encode(), stdout=subprocess.PIPE)
+        # Convert 5-bit array back to 8-bit
+        data8 = convertbits(data5, 5, 8, False)
 
-    # Check if the command executed successfully
-    if result.returncode != 0:
-        raise Exception("bech32 command failed")
+        hex_string = ''.join(format(x, '02x') for x in data8)
 
-    # Get the output and remove the first two characters
-    output = result.stdout.decode().strip()[2:]
-
-    return output
+        # remove the network tag
+        # print('hex string', hex_string)
+        if hex_string[:2] == "e0":
+            return hex_string[2:], False
+        else:
+            return hex_string[2:], True
+    except TypeError:
+        raise TypeError("non-standard format in run_bech32() arg at position 1")
 
 
 def to_bytes(s: str) -> bytes:
@@ -212,14 +218,18 @@ def build_resolved_output(tx_id: str, tx_idx: int, outputs: list[dict], network:
             # one index must exist
             # 2 and 3 are optional
             if txo['inline_datum'] is not None:
-                # empty stake address
-                if txo["stake_addr"] == '':
+                # smart contract
+                if txo["stake_addr"] is None:
                     network_flag = "71" if network is True else "70"
                     pkh = network_flag + txo['payment_addr']['cred']
                 else:
-                    network_flag = "11" if network is True else "10"
-                    stake_key = run_bech32(txo["stake_addr"])
+                    stake_key, flag = run_bech32(txo["stake_addr"])
+                    if flag is True:
+                        network_flag = "31" if network is True else "30"
+                    else:
+                        network_flag = "11" if network is True else "10"
                     pkh = network_flag + txo['payment_addr']['cred'] + stake_key
+                # correct format
                 pkh = to_bytes(pkh)
                 resolved[0] = pkh
 
@@ -228,7 +238,13 @@ def build_resolved_output(tx_id: str, tx_idx: int, outputs: list[dict], network:
                 resolved[2] = [1, cbor2.CBORTag(24, cbor_datum)]
             else:
                 # simple payment
-                network_flag = "61" if network is True else "60"
+                if txo["stake_addr"] is None:
+                    network_flag = "61" if network is True else "60"
+                    pkh = network_flag + txo['payment_addr']['cred']
+                else:
+                    network_flag = "01" if network is True else "00"
+                    stake_key, _ = run_bech32(txo["stake_addr"])
+                    pkh = network_flag + txo['payment_addr']['cred'] + stake_key
                 pkh = network_flag + txo['payment_addr']['cred']
                 pkh = to_bytes(pkh)
                 resolved[0] = pkh
