@@ -13,8 +13,9 @@ rm -fr build/ || true
 # start building out the entire script
 echo -e "\033[1;34m\nBuilding Contracts\n\033[0m"
 
-# standard build
-# aiken build
+# remove all traces
+# aiken build --trace-level silent --filter-traces user-defined
+
 
 # keep the traces for testing if required
 aiken build --trace-level compact --filter-traces all
