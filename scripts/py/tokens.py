@@ -20,12 +20,7 @@ def token_struc(pid: str, tkn: str, amt: int) -> dict:
 
 def list_struc(list_of_token_struc: list) -> dict:
     return {
-        "constructor": 0,
-        "fields": [
-            {
-                "list": list_of_token_struc
-            }
-        ]
+        "list": list_of_token_struc
     }
 
 
