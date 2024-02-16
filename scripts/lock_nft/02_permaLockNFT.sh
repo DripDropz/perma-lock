@@ -24,6 +24,11 @@ asset_amt=${3}
 
 echo Adding ${asset_amt} ${asset_pid}.${asset_tkn}
 
+# user wallet
+user_path="user-wallet"
+user_address=$(cat ../wallets/${user_path}/payment.addr)
+user_pkh=$(${cli} address key-hash --payment-verification-key-file ../wallets/${user_path}/payment.vkey)
+
 echo -e "\033[0;36m Gathering User UTxO Information  \033[0m"
 ${cli} query utxo \
     --testnet-magic ${testnet_magic} \
@@ -41,15 +46,6 @@ user_tx_in=${TXIN::-8}
 
 # get the user tokens and add all of them to the nft lock
 python ../py/tokens.py
-
-# python -c "
-# import json
-# data=json.load(open('../data/add-nft-redeemer.json', 'r'))
-# data['fields'][0]['list'][0]['fields'][0]['bytes'] = '$asset_pid'
-# data['fields'][0]['list'][0]['fields'][1]['bytes'] = '$asset_tkn'
-# data['fields'][0]['list'][0]['fields'][2]['int'] = $asset_amt
-# json.dump(data, open('../data/add-nft-redeemer.json', 'w'), indent=2)
-# "
 
 # stake key
 stake_key=$(jq -r '.stakeKey' ../../start_info.json)
@@ -149,7 +145,9 @@ else
 fi
 
 echo "Script OUTPUT: "${perma_lock_nft_script_address_out}
-
+#
+# exit
+#
 echo -e "\033[0;36m Gathering User UTxO Information  \033[0m"
 ${cli} query utxo \
     --testnet-magic ${testnet_magic} \

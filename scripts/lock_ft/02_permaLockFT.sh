@@ -18,7 +18,8 @@ fi
 token_amt=${1}
 
 # update the add amount but account for any size number up to 2^63 -1
-python -c "import json; data=json.load(open('../data/add-ft-redeemer.json', 'r')); data['fields'][0]['int'] = $token_amt; json.dump(data, open('../data/add-ft-redeemer.json', 'w'), indent=2)"
+python -c "import json; data=json.load(open('../data/add-ft-redeemer.json', 'r')); data['int'] = $token_amt; json.dump(data, open('../data/add-ft-redeemer.json', 'w'), indent=2)"
+# python -c "import json; data=json.load(open('../data/add-ft-redeemer.json', 'r')); data['fields'][0]['int'] = $token_amt; json.dump(data, open('../data/add-ft-redeemer.json', 'w'), indent=2)"
 
 # stake key
 stake_key=$(jq -r '.stakeKey' ../../start_info.json)
