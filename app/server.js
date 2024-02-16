@@ -1,31 +1,18 @@
 const express = require('express');
-const next = require('next');
-const cors = require('cors');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
-const port = parseInt(process.env.PORT, 10) || 3000;
-const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev });
-const handle = app.getRequestHandler();
+const app = express();
+const port = 3001; // You can choose a port that does not conflict with your current setup
 
-app.prepare().then(() => {
-  const server = express();
+// Proxy endpoints setup
+app.use('/api', createProxyMiddleware({
+  target: 'https://api.koios.rest', // The target API you're having CORS issues with
+  changeOrigin: true, // Needed for virtual hosted sites
+  pathRewrite: {
+    '^/api': '', // Rewrite the path so that '/api' is not passed to the API server
+  },
+}));
 
-  // Use the cors middleware
-  server.use(cors());
-
-  // Proxy requests to your API here, if needed
-  // Example: API Proxy Endpoint
-  server.use('/api', (req, res) => {
-    // Proxy code here
-  });
-
-  // Default handler for Next.js
-  server.all('*', (req, res) => {
-    return handle(req, res);
-  });
-
-  server.listen(port, (err) => {
-    if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
-  });
+app.listen(port, () => {
+  console.log(`Proxy server listening at http://localhost:${port}`);
 });

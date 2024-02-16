@@ -24,8 +24,6 @@ enum States {
 
 const koiosProvider = new KoiosProvider('preprod');
 
-
-
 export default function Home() {
   const [state, setState] = useState(States.init);
 
@@ -95,15 +93,6 @@ function Unlock({ setState }) {
   // the wallet we need
   const { wallet } = useWallet();
 
-  // the script we are spending from
-  const script: PlutusScript = {
-    code: cbor
-      .encode(Buffer.from(plutusScript.validators[1].compiledCode, "hex"))
-      .toString("hex"),
-    version: "V2",
-  };
-
-  
   // click unlock aiken button
   async function unlockAiken() {
     setState(States.unlocking);
@@ -131,25 +120,22 @@ function Unlock({ setState }) {
     // get contract utxos and search for the one with the same datum hash
     // this will neeed to be the round robin part where the utxo selection
     // is based off of our choice
-    // const contractUTxOs = await fetchAddressUtxos([scriptAddress]);
     const contractUTxOs = await koiosProvider.fetchAddressUTxOs(scriptAddress);
     let contractUTxO = contractUTxOs.find((utxo: any) => {
       return utxo.datum_hash === datumHash;
     });
     console.log("Contract UTxO", contractUTxO);
-
     
-    // [{ unit: policyId + tokenName, quantity: "1" }]
-
     // get the wallet utxos to see what to lock
     // this is either a user selection or a look up
     // from list kind of thing.
     // the asset we are going to lock
     // hardcoded for now
-    const targetUnit = "0409e2e893b11527311de4455cf699127b71b7870754a8a493c5edfb4c54";
     const targetPid = "0409e2e893b11527311de4455cf699127b71b7870754a8a493c5edfb";
     const targetTkn = "4c54";
     const targetAmt = 123321;
+    // concat
+    const targetUnit = targetPid + targetTkn;
 
     // contract
     type Asset = {
@@ -159,7 +145,7 @@ function Unlock({ setState }) {
     
     let contractAssets: Asset[] = [];
     contractUTxO.asset_list.forEach(asset => {
-      console.log(asset);
+      // console.log(asset);
       if (asset.policy_id === targetPid) {
         // policy id and asset name are strings
         // quanity and amt needs to be ints added then converted back to a string
@@ -169,30 +155,34 @@ function Unlock({ setState }) {
         contractAssets.push({unit: asset.policy_id + asset.asset_name, quantity: asset.quantity})
       }
     });
+    // need to make things that look like this
     // [{ unit: policyId + tokenName, quantity: "1" }]
 
     // we need the users utxos now
     const walletUTxOs = await wallet.getUtxos();
     const collateralUTxOs = await wallet.getCollateral();
+    // just grab the first one
     const collateralUTxO = collateralUTxOs[0]
-    console.log(collateralUTxOs);
+    console.log(collateralUTxO);
     
     // get all the utxos with that token and hope for the best that the change works
+    // this needs to be a utxo selection algo that doesnt suck
     let filteredUTxOs = walletUTxOs.filter((utxo) => {
-      // Check if the utxo contains the targetPid
+      // Check if the utxo contains the target unit
       const containsTargetUnit = utxo.output.amount.some((asset) => {
         return asset.unit === targetUnit;
       });
       // Check if the utxo only has lovelace
       const hasOnlyLovelace = utxo.output.amount.length === 1 && utxo.output.amount[0].unit === 'lovelace';
 
-      // Check if either condition is satisfied
+      // grab all utxos that have that token and all the utxos that are ada
       return containsTargetUnit || hasOnlyLovelace;
     
     });
     console.log("Wallet UTxO", filteredUTxOs);
 
     // this will be the token to lock
+    // many tokens can be in the list
     const redeemer = {
       list: [
         {
@@ -206,16 +196,15 @@ function Unlock({ setState }) {
       ]
     };
 
-    console.log("Connect to Provider");
-
     /// NOW BUILD THE TX
+    console.log("Connect to Provider");
     const mesh = new MeshTxBuilder({
       fetcher: koiosProvider,
       submitter: koiosProvider,
       evaluator: koiosProvider,
     });
+    
     console.log("Building Tx");
-
     mesh
       .changeAddress(changeAddress)
       .txInCollateral(collateralUTxO.input.txHash, collateralUTxO.input.outputIndex)
@@ -232,13 +221,11 @@ function Unlock({ setState }) {
       mesh.txIn(utxo.input.txHash, utxo.input.outputIndex);
     });
     // user outputs should be handled by change address
+
     console.log("Complete Tx");
-
-    await mesh.complete();
-    const signedTx = mesh.completeSigning()
-    console.log(signedTx);
-
-
+    await mesh.completeSync();
+    // const signedTx = mesh.completeSigning()
+    // console.log(signedTx);
   }
 
   return (
