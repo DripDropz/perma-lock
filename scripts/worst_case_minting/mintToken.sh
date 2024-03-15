@@ -13,6 +13,9 @@ user_address=$(cat ../wallets/user-wallet/payment.addr)
 user_pkh=$(${cli} address key-hash --payment-verification-key-file ../wallets/user-wallet/payment.vkey)
 
 # pid and tkn
+
+# update the add amount but account for any size number up to 2^63 -1
+python -c "import json; data=json.load(open('./policy/policy.script', 'r'));prev_slot = data['scripts'][0]['slot']; data['scripts'][0]['slot'] = prev_slot+1; json.dump(data, open('./policy/policy.script', 'w'), indent=2)"
 policy_id=$(cardano-cli transaction policyid --script-file ${mint_path})
 # This_Is_A_Very_Long_String______
 token_name="546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f"
@@ -45,11 +48,18 @@ alltxin=""
 TXIN=$(jq -r --arg alltxin "" 'keys[] | . + $alltxin + " --tx-in"' ../tmp/user_utxo.json)
 user_tx_in=${TXIN::-8}
 
+# slot contraints
+slot=$(${cli} query tip --testnet-magic ${testnet_magic} | jq .slot)
+current_slot=$(($slot - 1))
+final_slot=$(($slot + 2500))
+
 # exit
 echo -e "\033[0;36m Building Tx \033[0m"
 FEE=$(${cli} transaction build \
     --babbage-era \
     --out-file ../tmp/tx.draft \
+    --invalid-before ${current_slot} \
+    --invalid-hereafter ${final_slot} \
     --change-address ${user_address} \
     --tx-in ${user_tx_in} \
     --tx-out="${user_address_out}" \
