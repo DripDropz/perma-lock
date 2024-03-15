@@ -54,7 +54,6 @@ FEE=$(${cli} transaction build \
     --tx-in ${seller_tx_in} \
     --testnet-magic ${testnet_magic})
 
-    # --tx-out="${tokens_to_be_traded}" \
 IFS=':' read -ra VALUE <<< "${FEE}"
 IFS=' ' read -ra FEE <<< "${VALUE[1]}"
 FEE=${FEE[1]}
