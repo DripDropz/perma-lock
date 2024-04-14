@@ -14,11 +14,11 @@ rm -fr build/ || true
 echo -e "\033[1;34m\nBuilding Contracts\n\033[0m"
 
 # remove all traces
-# aiken build --trace-level silent --filter-traces user-defined
+aiken build --trace-level silent --filter-traces user-defined
 
 
 # keep the traces for testing if required
-aiken build --trace-level compact --filter-traces all
+# aiken build --trace-level compact --filter-traces all
 
 ###############################################################################
 ###############################################################################
@@ -35,7 +35,8 @@ locking_pid_cbor=$(python3 -c "import cbor2;hex_string='${locking_pid}';data = b
 locking_tkn_cbor=$(python3 -c "import cbor2;hex_string='${locking_tkn}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
 # randomly generate a length 32 hex string
-random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
+# random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
+random_string="acab"
 random_cbor=$(python3 -c "import cbor2;hex_string='${random_string}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
 echo Random String 1: ${random_string}
@@ -57,7 +58,8 @@ aiken blueprint convert -v perma_lock_ft.params > contracts/perma_lock_ft_contra
 echo -e "\033[1;34m\nBuilding NFT Contract \033[0m"
 
 # randomly generate a length 32 hex string
-random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
+# random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
+random_string="acab"
 random_cbor=$(python3 -c "import cbor2;hex_string='${random_string}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
 echo Random String 2: ${random_string}
