@@ -14,8 +14,8 @@ sender_path="./wallets/user-wallet/"
 sender_address=$(cat ${sender_path}payment.addr)
 receiver_address="addr_test1qrvnxkaylr4upwxfxctpxpcumj0fl6fdujdc72j8sgpraa9l4gu9er4t0w7udjvt2pqngddn6q4h8h3uv38p8p9cq82qav4lmp"
 
-locking_pid=$(jq -r '.lockingPid' ../start_info.json)
-locking_tkn=$(jq -r '.lockingTkn' ../start_info.json)
+locking_pid=$(jq -r '.lockingPid' ../config.json)
+locking_tkn=$(jq -r '.lockingTkn' ../config.json)
 
 echo -e "\033[0;36m Gathering UTxO Information  \033[0m"
 ${cli} query utxo \

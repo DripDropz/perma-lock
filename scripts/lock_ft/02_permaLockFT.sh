@@ -22,7 +22,7 @@ python -c "import json; data=json.load(open('../data/add-ft-redeemer.json', 'r')
 # python -c "import json; data=json.load(open('../data/add-ft-redeemer.json', 'r')); data['fields'][0]['int'] = $token_amt; json.dump(data, open('../data/add-ft-redeemer.json', 'w'), indent=2)"
 
 # stake key
-stake_key=$(jq -r '.stakeKey' ../../start_info.json)
+stake_key=$(jq -r '.stakeKey' ../../config.json)
 
 # perma lock contract
 perma_lock_ft_script_path="../../contracts/perma_lock_ft_contract.plutus"
@@ -53,8 +53,8 @@ TXIN=$(jq -r --arg alltxin "" 'keys[] | . + $alltxin + " --tx-in"' ../tmp/script
 script_tx_in=${TXIN::-8}
 
 
-locking_pid=$(jq -r '.lockingPid' ../../start_info.json)
-locking_tkn=$(jq -r '.lockingTkn' ../../start_info.json)
+locking_pid=$(jq -r '.lockingPid' ../../config.json)
+locking_tkn=$(jq -r '.lockingTkn' ../../config.json)
 # this should work for the min lovelace
 script_lovelace=$(jq '[.[] | .value.lovelace] | add' ../tmp/script_utxo.json)
 # get the current token amount but account for numbers below 2^63 -1

@@ -28,37 +28,33 @@ validator(
   _random_string: ByteArray,
 ) {
   fn params(_datum: Void, add_amt: Int, context: ScriptContext) -> Bool {
-    when context.purpose is {
-      // spend only
-      Spend(out_ref) -> {
-        // the entire transaction
-        let tx: Transaction = context.transaction
-        // this input being validated
-        let this_input: Input = find.input_by_ref(tx.inputs, out_ref)
-        // this address being spent from
-        let this_addr: Address = this_input.output.address
-        // calculate that value returning to this address
-        let that_value: Value =
-          this_input.output.value |> value.add(lock_pid, lock_tkn, add_amt)
-        // this silent fails for anything coming back that isn't the Void type
-        expect _: Void = find.output_datum_by_addr(tx.outputs, this_addr)
-        //
-        // Add `amt lock_pid.lock_tkn` to this value and send that value back 
-        // to this address.
-        //
-        and {
-          // single script input
-          count.inputs_by_addr(tx.inputs, this_addr, 1)?,
-          // single script output
-          count.outputs_by_addr(tx.outputs, this_addr, 1)?,
-          // add tokens only
-          (add_amt > 0)?,
-          // send exactly that value back to this address
-          payout.exact(this_addr, that_value, tx.outputs)?,
-        }
-      }
-      // anything else fails
-      _ -> False
+    // must be spending
+    expect Spend(out_ref) = context.purpose
+    // the transaction being validated
+    let Transaction { inputs, outputs, .. } = context.transaction
+    // this input being validated
+    let this_input: Input = find.input_by_ref(inputs, out_ref)
+    // this address being spent from
+    let this_addr: Address = this_input.output.address
+    // calculate that value returning to this address
+    let that_value: Value =
+      this_input.output.value |> value.add(lock_pid, lock_tkn, add_amt)
+    // this silent fails for anything coming back that isn't the Void type
+    expect _: Void = find.output_datum_by_addr(outputs, this_addr)
+    //
+    // Add `add_amt lock_pid.lock_tkn` to this value and send that value back 
+    // to this address. The add amount must be positive and the value being 
+    // sent back must be exact.
+    //
+    and {
+      // single script input
+      count.inputs_by_addr(inputs, this_addr, 1)?,
+      // single script output
+      count.outputs_by_addr(outputs, this_addr, 1)?,
+      // can only add an amount of token
+      (add_amt > 0)?,
+      // send exactly that value back to this address
+      payout.exact(this_addr, that_value, outputs)?,
     }
   }
 }

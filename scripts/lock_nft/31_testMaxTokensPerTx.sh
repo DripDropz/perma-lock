@@ -75,7 +75,7 @@ user_token_string=$(cat ../data/token_string.txt)
 echo $user_token_string
 
 # stake key
-stake_key=$(jq -r '.stakeKey' ../../start_info.json)
+stake_key=$(jq -r '.stakeKey' ../../config.json)
 
 # perma lock contract
 perma_lock_nft_script_path="../../contracts/perma_lock_nft_contract.plutus"

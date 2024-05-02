@@ -11,15 +11,19 @@ The `Perma Lock NFT` contract is designed to permanently lock various types of t
 
 ## **Configuration**
 
-Configuring the `Perma Lock FT` contract begins by specifying the token details inside `start_info.json`:
+Configuring the `Perma Lock FT` contract begins by specifying the required compile information inside `config.json`:
 
 ```json
 {
-  "__comment1__": "This is the ft to lock for the perma lock ft contract",
-  "lockingPid": "954fe5769e9eb8dad54c99f8d62015c813c24f229a4d98dbf05c28b9",
-  "lockingNFT": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
-  "__comment2__": "This is maximum amount of the ft in existence.",
-  "maxTokenAmt": 9223372036854775807
+  "__comment1__": "The FT compile information",
+  "lockingPid": "d441227553a0f1a965fee7d60a0f724b368dd1bddbc208730fccebcf",
+  "lockingTkn": "546869735f49735f415f566572795f4c6f6e675f537472696e675f5f5f5f5f5f",
+  "maxTokenAmt": 9223372036854775807,
+  "randomString1": "acab",
+  "__comment2__": "The NFT compile information",
+  "randomString2": "cafe",
+  "__comment3__": "Place a static stake key here for testing",
+  "stakeKey": "stake_test1uzl65wzu364hh0wxex94qsf5xkeaq2mnmc7xgnsnsjuqr4qruvxwu"
 }
 ```
 
@@ -65,7 +69,7 @@ To add tokens to the `Perma Lock FT` contract:
 ./02_permaLockFT.sh 123456789
 ```
 
-The command above locks 123,456,789 tokens into the contract, as specified in the `start_info.json`.
+The command above locks 123,456,789 tokens into the contract, as specified in the `config.json`.
 
 To add tokens to the `Perma Lock NFT` contract:
 
@@ -81,6 +85,6 @@ The command above locks some amount of tokens into the contract, as specified by
 
 Worst case for the nft lock is 64 unique policy ids. On pre-production, the UTxO `2981fdc49509b9cfc1c122b0dfc2563f29e49c2a07337ad55da3e2017a561124#0` is currently maxed out. 
 
-Worst case for the nft lock per transaction is 36. On pre-production, the UTxO `ff9b410414a5a5c0a2f63e9358b7299d296bb304ae579360dccf008357149809` shows the maximum amount of tokens for a single transaction. 
+Worst case for the nft lock per transaction is 36. On pre-production, the transaction `ff9b410414a5a5c0a2f63e9358b7299d296bb304ae579360dccf008357149809` shows the maximum amount of tokens for a single transaction. 
 
 The max memory parameter would have to be increased at the protocol level to account for more unique policy ids on the UTxO.

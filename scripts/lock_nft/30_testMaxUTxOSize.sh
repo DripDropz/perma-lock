@@ -42,7 +42,7 @@ json.dump(data, open('../data/add-nft-redeemer.json', 'w'), indent=2)
 "
 
 # stake key
-stake_key=$(jq -r '.stakeKey' ../../start_info.json)
+stake_key=$(jq -r '.stakeKey' ../../config.json)
 
 # perma lock contract
 perma_lock_nft_script_path="../../contracts/perma_lock_nft_contract.plutus"

@@ -48,7 +48,7 @@ user_tx_in=${TXIN::-8}
 python ../py/tokens.py
 
 # stake key
-stake_key=$(jq -r '.stakeKey' ../../start_info.json)
+stake_key=$(jq -r '.stakeKey' ../../config.json)
 
 # perma lock contract
 perma_lock_nft_script_path="../../contracts/perma_lock_nft_contract.plutus"
