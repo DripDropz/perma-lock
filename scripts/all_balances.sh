@@ -6,7 +6,7 @@ cli=$(cat ./data/path_to_cli.sh)
 testnet_magic=$(cat ./data/testnet.magic)
 
 # stake key
-stake_key=$(jq -r '.stakeKey' ../start_info.json)
+stake_key=$(jq -r '.stakeKey' ../config.json)
 
 # perma lock ft contract
 perma_lock_ft_script_path="../contracts/perma_lock_ft_contract.plutus"

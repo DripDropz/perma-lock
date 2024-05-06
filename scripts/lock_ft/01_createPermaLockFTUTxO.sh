@@ -6,7 +6,7 @@ cli=$(cat ../data/path_to_cli.sh)
 testnet_magic=$(cat ../data/testnet.magic)
 
 # stake key
-stake_key=$(jq -r '.stakeKey' ../../start_info.json)
+stake_key=$(jq -r '.stakeKey' ../../config.json)
 
 # perma lock contract
 perma_lock_ft_script_path="../../contracts/perma_lock_ft_contract.plutus"
@@ -18,9 +18,9 @@ user_address=$(cat ../wallets/${user_path}/payment.addr)
 user_pkh=$(${cli} address key-hash --payment-verification-key-file ../wallets/${user_path}/payment.vkey)
 
 # this is the maximum amount of tokens that could possible exist
-locking_pid=$(jq -r '.lockingPid' ../../start_info.json)
-locking_tkn=$(jq -r '.lockingTkn' ../../start_info.json)
-max_tkn_amt=$(jq -r '.maxTokenAmt' ../../start_info.json)
+locking_pid=$(jq -r '.lockingPid' ../../config.json)
+locking_tkn=$(jq -r '.lockingTkn' ../../config.json)
+max_tkn_amt=$(jq -r '.maxTokenAmt' ../../config.json)
 worst_case_value="${max_tkn_amt} ${locking_pid}.${locking_tkn}"
 
 # calc the min ada required for the worst case value and datum

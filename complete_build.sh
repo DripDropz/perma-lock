@@ -27,18 +27,19 @@ aiken build --trace-level compact --filter-traces all
 echo -e "\033[1;34m\nBuilding FT Contract \033[0m"
 
 # the locking token information
-locking_pid=$(jq -r '.lockingPid' start_info.json)
-locking_tkn=$(jq -r '.lockingTkn' start_info.json)
+locking_pid=$(jq -r '.lockingPid' config.json)
+locking_tkn=$(jq -r '.lockingTkn' config.json)
 
 # convert token info into proper cbor
 locking_pid_cbor=$(python3 -c "import cbor2;hex_string='${locking_pid}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 locking_tkn_cbor=$(python3 -c "import cbor2;hex_string='${locking_tkn}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
 # randomly generate a length 32 hex string
-random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
-random_cbor=$(python3 -c "import cbor2;hex_string='${random_string}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
+# random_string1=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
+random_string1=$(jq -r '.randomString1' config.json)
+random_cbor=$(python3 -c "import cbor2;hex_string='${random_string1}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
-echo Random String 1: ${random_string}
+echo Random String 1: ${random_string1}
 
 echo -e "\033[1;33m Convert Perma Lock FT Contract \033[0m"
 
@@ -57,10 +58,11 @@ aiken blueprint convert -v perma_lock_ft.params > contracts/perma_lock_ft_contra
 echo -e "\033[1;34m\nBuilding NFT Contract \033[0m"
 
 # randomly generate a length 32 hex string
-random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
-random_cbor=$(python3 -c "import cbor2;hex_string='${random_string}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
+# random_string=$(LC_ALL=C tr -dc a-f0-9 </dev/urandom | head -c 32)
+random_string2=$(jq -r '.randomString2' config.json)
+random_cbor=$(python3 -c "import cbor2;hex_string='${random_string2}';data = bytes.fromhex(hex_string);encoded = cbor2.dumps(data);print(encoded.hex())")
 
-echo Random String 2: ${random_string}
+echo Random String 2: ${random_string2}
 
 echo -e "\033[1;33m Convert Perma Lock NFT Contract \033[0m"
 
