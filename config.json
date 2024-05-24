@@ -6,6 +6,6 @@
   "randomString1": "acab",
   "__comment2__": "The NFT compile information",
   "randomString2": "acab",
-  "__comment3__": "Place a static stake key here for testing",
+  "__comment3__": "Place a static stake key",
   "stakeKey": "stake_test1uzl65wzu364hh0wxex94qsf5xkeaq2mnmc7xgnsnsjuqr4qruvxwu"
 }
